@@ -118,6 +118,7 @@ feature
 			buffer := filereader.last_string
 			nb_occurence := buffer.occurrences(';')
 			debut := 1
+			nombre := 1
 			from i := 0
 			until i > nb_occurence
 			loop
@@ -173,11 +174,12 @@ feature
 			if ( var_dvd = 1) then
 				var_dvd := 0
 				create dvd.make_dvd(titre,annee,liste_realisateur,liste_acteur,type,nombre)
-				medias.add_last(dvd)
 				ajouter_dvd(dvd)
+				medias.add_last(dvd)
 				titre := ""
 				annee :=0
 				type := ""
+				nombre := 1
 			end
 			if ( var_livre = 1 ) then
 				var_livre := 0
@@ -195,14 +197,16 @@ feature
 		m : DVD
 		test : BOOLEAN
 	do
+		io.put_integer(medias.count-1)
 		from i := 0
 		until i > medias.count-1
 		loop
 			if ({DVD}?:= medias@i) then
 				m ::= medias@i
-				test := dvd.compare(m)
-				io.put_boolean(test)
-				io.put_new_line
+				test := m.compare(dvd)
+				--io.put_string(m.titre + " " + dvd.titre)
+				--io.put_boolean(test)
+				--io.put_new_line
 			end
 			i := i + 1
 		end

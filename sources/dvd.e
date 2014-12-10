@@ -39,28 +39,14 @@ feature {ANY}
 	
 	afficher : STRING is
 	do
-		Result := Precursor + " " + annee.to_string + " " + type + get_string_realisateur
+		Result := Precursor + " " + annee.to_string +" " + type + get_string_realisateur
 	end
 
 	compare(dvd : DVD) : BOOLEAN is
-	local
-		res, fin : BOOLEAN
-		i : INTEGER
 	do
-		res := True
-		fin := False
-		from i := 0
-		until fin = True or i > liste_realisateur.count-1
-		loop
-			if (liste_realisateur.item(i) = dvd.liste_realisateur.item(i)) then
-				res := True
-			else
-				res := False
-				fin := True
-			end
-			i := i + 1
-		end
-		Result := (res and (titre = dvd.titre))
+		io.put_string(titre+" "+dvd.titre+"%N")
+		io.put_boolean(titre.is_equal(dvd.titre))
+		Result := (titre.is_equal(dvd.titre))
 	end
 	
 	get_string_realisateur : STRING is
