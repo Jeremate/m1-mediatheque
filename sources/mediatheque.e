@@ -191,16 +191,22 @@ feature
 --- AJOUTER UN DVD
 ---------------------------------		
 	ajouter_dvd(dvd : DVD) is
+	local
+		indice : INTEGER
 	do
-		if not(verification_dvd(dvd)) then
+		indice := verification_dvd(dvd)
+		io.put_integer(indice)
+		if (indice = -1) then
 			medias.add_last(dvd)
+		else
+			medias.item(indice).set_nombre(dvd.nombre)
 		end
 	end	
 	
 ---------------------------------
 --- VERIFICATION DOUBLON DVD
 ---------------------------------		
-	verification_dvd(dvd : DVD) : BOOLEAN is
+	verification_dvd(dvd : DVD) : INTEGER is
 	local 
 		i : INTEGER
 		m : DVD
@@ -220,7 +226,12 @@ feature
 			end
 			i := i + 1
 		end
-		Result := test
+		if stop = False then
+			i := -1
+		else
+			i := i - 1
+		end
+		Result := i
 	end	
 	
 ---------------------------------
