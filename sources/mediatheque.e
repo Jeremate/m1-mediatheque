@@ -107,6 +107,7 @@ feature
 		buffer valeur ,titre, type, auteur: STRING
 		debut , fin, nb_occurence : INTEGER
 		dvd : DVD
+		livre : LIVRE
 	do
 		create filereader.connect_to(filename_medias)
 		from 
@@ -182,7 +183,9 @@ feature
 			end
 			if ( var_livre = 1 ) then
 				var_livre := 0
-				--create livre.make_dvd(titre,acteur,nombre)
+				create livre.make_livre(titre,auteur,nombre)
+				ajouter_livre(livre)
+				auteur := ""
 			end
 		end
 	end
@@ -195,11 +198,25 @@ feature
 		indice : INTEGER
 	do
 		indice := verification_dvd(dvd)
-		io.put_integer(indice)
 		if (indice = -1) then
 			medias.add_last(dvd)
 		else
 			medias.item(indice).set_nombre(dvd.nombre)
+		end
+	end	
+
+---------------------------------
+--- AJOUTER UN LIVRE
+---------------------------------		
+	ajouter_livre(livre : LIVRE) is
+	local
+		indice : INTEGER
+	do
+		indice := verification_livre(livre)
+		if (indice = -1) then
+			medias.add_last(livre)
+		else
+			medias.item(indice).set_nombre(livre.nombre)
 		end
 	end	
 	
@@ -233,6 +250,38 @@ feature
 		end
 		Result := i
 	end	
+
+---------------------------------
+--- VERIFICATION DOUBLON LIVE
+---------------------------------		
+	verification_livre(livre : LIVRE) : INTEGER is
+	local 
+		i : INTEGER
+		m : LIVRE
+		test, stop: BOOLEAN
+	do
+		stop := False
+		test := False
+		from i := 0
+		until stop = True or i > medias.count-1
+		loop
+			if ({LIVRE}?:= medias@i) then
+				m ::= medias@i
+				test := m.compare(livre)
+				if (test) then
+					stop := True
+				end
+			end
+			i := i + 1
+		end
+		if stop = False then
+			i := -1
+		else
+			i := i - 1
+		end
+		Result := i
+	end	
+	
 	
 ---------------------------------
 --- AFFICHAGE DES UTILISATEURS
