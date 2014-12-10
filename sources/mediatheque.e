@@ -8,11 +8,14 @@ feature {ANY}
 	utilisateurs: ARRAY[UTILISATEUR] -- liste des utilisateurs
 	filename_utilisateurs: STRING -- chemin vers le fichier utilisateurs
 	filename_medias: STRING --chemin vers le fichier medias
-	
+	interface : INTERFACE
 	
 feature
 	
-	make is 
+	make is
+		local
+			stop : BOOLEAN
+			command : STRING
 		do
 			-- Initialisation
 			create utilisateurs.with_capacity(0,0)
@@ -24,10 +27,30 @@ feature
 			lire_fichier_utilisateurs
 			lire_fichier_medias
 			--affiche_menu
-			afficher_medias
+			--afficher_medias
 			--afficher_utilisateurs
-			
+			create interface.make
 			--io.put_new_line
+			from 
+				interface.ecran_accueil
+			until
+				stop
+			loop
+				io.put_string(once "ENTRER VOTRE CHOIX: ")
+				io.flush
+				io.read_line
+				command := io.last_string.twin
+				command.left_adjust
+				command.right_adjust
+				inspect
+					command
+				when "q", "Q", "quitter" then
+					stop := True
+				else
+					io.put_string("Commande inconnue%N")
+				end
+				
+			end
 		end
 		
 ---------------------------------
