@@ -17,6 +17,14 @@ feature {ANY}
 		Result := titre + " "+ nombre.to_string
 	end
 	
-       
+---------------------
+--- SETTERS
+---------------------
+	set_nombre(valeur: INTEGER) is
+	do
+       nombre := nombre + valeur
+	end
+	
+	
 end -- classe MEDIA
 
