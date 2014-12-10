@@ -101,86 +101,115 @@ feature
 	lire_fichier_medias is
 	local
 		filereader: TEXT_FILE_READ
-		i,nombre, val, annee, var_dvd, var_livre : INTEGER
+		i,nombre, annee, var_dvd, var_livre : INTEGER
 		liste_realisateur : ARRAY[STRING]
-		liste_auteur : ARRAY[STRING]
-		titre, type: STRING
+		liste_acteur : ARRAY[STRING]
+		buffer valeur ,titre, type, auteur: STRING
+		debut , fin, nb_occurence : INTEGER
 		dvd : DVD
 	do
 		create filereader.connect_to(filename_medias)
-		create liste_realisateur.with_capacity(0, 0)		
-		create liste_auteur.with_capacity(0, 0)
-		i := 1
-		var_dvd := 0
-		titre := ""
-		nombre := 0
-		annee := 0
-		type := ""
-		val := 99999
 		from 
 		until filereader.end_of_input
 		loop
-			--io.put_integer(i)
-			if (var_dvd = 1 and i>val) then
-				--io.put_string(titre)
-				create dvd.make_dvd(titre, annee, liste_realisateur, liste_auteur, type, nombre)
-				medias.add_last(dvd)
+			filereader.read_line
+			create liste_realisateur.with_capacity(0, 0)		
+			create liste_acteur.with_capacity(0, 0)
+			buffer := filereader.last_string
+			nb_occurence := buffer.occurrences(';')
+			debut := 1
+			from i := 0
+			until i > nb_occurence
+			loop
+				i := i + 1
+				fin := buffer.index_of(';',debut)
+				if (fin = 0) then
+					fin := buffer.count
+				end
+				if (buffer.substring(debut,fin).has_substring("DVD")) then
+					var_dvd := 1
+					debut := fin + 1
+				end
+				if (buffer.substring(debut,fin).has_substring("Livre")) then
+					var_livre := 1
+					debut := fin + 1
+				end
+				if (buffer.substring(debut,fin).has_substring("Acteur")) then
+					valeur := buffer.substring(debut,fin)
+					liste_acteur.add_last(valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1))
+					debut := fin + 1				
+				end
+				if (buffer.substring(debut,fin).has_substring("Auteur")) then
+					valeur := buffer.substring(debut,fin)
+					auteur := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1))
+					debut := fin + 1				
+				end
+				if (buffer.substring(debut,fin).has_substring("Realisateur")) then
+					valeur := buffer.substring(debut,fin)
+					liste_realisateur.add_last(valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1))
+					debut := fin + 1				
+				end
+				if (buffer.substring(debut,fin).has_substring("Annee")) then
+					valeur := buffer.substring(debut,fin)
+					annee := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+					debut := fin + 1				
+				end
+				if (buffer.substring(debut,fin).has_substring("Titre")) then
+					valeur := buffer.substring(debut,fin)
+					titre := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1))
+					debut := fin + 1				
+				end
+				if (buffer.substring(debut,fin).has_substring("Type")) then
+					valeur := buffer.substring(debut,fin)
+					type := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1))
+					debut := fin + 1				
+				end
+				if (buffer.substring(debut,fin).has_substring("Nombre")) then
+					valeur := buffer.substring(debut,fin)
+					nombre := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+					debut := fin + 1				
+				end
+			end
+			if ( var_dvd = 1) then
 				var_dvd := 0
+				create dvd.make_dvd(titre,annee,liste_realisateur,liste_acteur,type,nombre)
+				medias.add_last(dvd)
+				ajouter_dvd(dvd)
 				titre := ""
-				nombre := 0
-				annee := 9999
+				annee :=0
 				type := ""
-				i := 0
-				val := 99999
 			end
-			if (var_livre = 1 and i >1) then
-				--create media.make(titre, annee, liste_realisateur, liste_auteur, type, nombre)
+			if ( var_livre = 1 ) then
 				var_livre := 0
-				i := 0
+				--create livre.make_dvd(titre,acteur,nombre)
 			end
-			filereader.read_word_using(";<>%R%N")
-			--io.put_integer(i)
-			--io.put_string(filereader.last_string)
-			if (filereader.last_string.has_substring("DVD")) then
-				--io.put_string("wow" + titre )
-				var_dvd := 1
-				val := i
-			end
-			if (filereader.last_string.has_substring("Livre")) then
-				var_livre := 1
-			end					
-			if (filereader.last_string.has_substring("Realisateur")) then
-				filereader.read_word_using(";<>%R%N")
-				liste_realisateur.add_last(filereader.last_string)
-			end
-			if (filereader.last_string.has_substring("Nombre")) then
-				filereader.read_word_using(";<>%R%N")
-				nombre := filereader.last_string.to_integer
-			end
-			if (filereader.last_string.has_substring("Titre")) then
-				filereader.read_word_using(";<>%R%N")
-				titre.copy(filereader.last_string)
-			end
-			if (filereader.last_string.has_substring("Annee")) then
-				filereader.read_word_using(";<>%R%N")
-				annee := filereader.last_string.to_integer
-			end
-			if (filereader.last_string.has_substring("Acteur")) then
-				filereader.read_word_using(";<>%R%N")
-				liste_auteur.add_last(filereader.last_string)
-			end
-			if (filereader.last_string.has_substring("Type")) then
-				filereader.read_word_using(";<>%R%N")
-				type.copy(filereader.last_string)
-			end
-			--io.put_new_line
-			i := i +1 
-
 		end
-		--io.put_integer(i)
 	end
 
+---------------------------------
+--- AJOUTER UN MEDIA
+---------------------------------		
+	ajouter_dvd(dvd : DVD) is
+	local 
+		i : INTEGER
+		m : DVD
+		test : BOOLEAN
+	do
+		from i := 0
+		until i > medias.count-1
+		loop
+			if ({DVD}?:= medias@i) then
+				m ::= medias@i
+				test := dvd.compare(m)
+				io.put_boolean(test)
+				io.put_new_line
+			end
+			i := i + 1
+		end
+		io.put_new_line
+	end	
 
+	
 ---------------------------------
 --- AFFICHAGE DES UTILISATEURS
 ---------------------------------		
@@ -208,6 +237,7 @@ feature
 		i : INTEGER
 	do
 		io.put_new_line
+		io.put_string("Affichage des médias %N")
 		from i := 0
 		until i > medias.count-1
 		loop
