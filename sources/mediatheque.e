@@ -175,7 +175,6 @@ feature
 				var_dvd := 0
 				create dvd.make_dvd(titre,annee,liste_realisateur,liste_acteur,type,nombre)
 				ajouter_dvd(dvd)
-				medias.add_last(dvd)
 				titre := ""
 				annee :=0
 				type := ""
@@ -189,30 +188,40 @@ feature
 	end
 
 ---------------------------------
---- AJOUTER UN MEDIA
+--- AJOUTER UN DVD
 ---------------------------------		
 	ajouter_dvd(dvd : DVD) is
+	do
+		if not(verification_dvd(dvd)) then
+			medias.add_last(dvd)
+		end
+	end	
+	
+---------------------------------
+--- VERIFICATION DOUBLON DVD
+---------------------------------		
+	verification_dvd(dvd : DVD) : BOOLEAN is
 	local 
 		i : INTEGER
 		m : DVD
-		test : BOOLEAN
+		test, stop: BOOLEAN
 	do
-		io.put_integer(medias.count-1)
+		stop := False
+		test := False
 		from i := 0
-		until i > medias.count-1
+		until stop = True or i > medias.count-1
 		loop
 			if ({DVD}?:= medias@i) then
 				m ::= medias@i
 				test := m.compare(dvd)
-				--io.put_string(m.titre + " " + dvd.titre)
-				--io.put_boolean(test)
-				--io.put_new_line
+				if (test) then
+					stop := True
+				end
 			end
 			i := i + 1
 		end
-		io.put_new_line
+		Result := test
 	end	
-
 	
 ---------------------------------
 --- AFFICHAGE DES UTILISATEURS

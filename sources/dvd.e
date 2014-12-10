@@ -44,9 +44,7 @@ feature {ANY}
 
 	compare(dvd : DVD) : BOOLEAN is
 	do
-		io.put_string(titre+" "+dvd.titre+"%N")
-		io.put_boolean(titre.is_equal(dvd.titre))
-		Result := (titre.is_equal(dvd.titre))
+		Result := (titre.is_equal(dvd.titre) and liste_realisateur.is_equal_map(dvd.liste_realisateur))
 	end
 	
 	get_string_realisateur : STRING is
