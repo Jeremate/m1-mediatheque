@@ -81,25 +81,33 @@ feature {ANY}
 	call_menu is
 	do
 		encart("Menu")
-		io.put_string("%NEn cours%N")
+		io.put_string("%N 1 - Gestion des emprunts%N")	
 	end
 	
 	menu_gestion_medias is
 	do
 		encart("Gestion des medias")
-		io.put_string("%NEn cours%N")
+		io.put_string("%N 1 - Afficher la liste des medias %N")
+		io.put_string("%N 2 - Importer les informations du fichier medias.txt %N")
+		io.put_string("%N 3 - Ajouter un media %N")
+		io.put_string("%N 4 - Supprimer un media (par titre) %N")
+		io.put_string("%N 5 - Rechercher un media (par titre) %N")
 	end
 	
 	menu_gestion_emprunts is
 	do
 		encart("Gestion des emprunts")
-		io.put_string("%NEn cours%N")
+		io.put_string("%N 1 - Emprunter un media %N")
+		io.put_string("%N 2 - Rendre un media %N")
 	end
 	
 	menu_gestion_utilisateurs is
 	do
 		encart("Gestion des utilisateurs")
-		io.put_string("%NEn cours%N")
+		io.put_string("%N 1 - Afficher la liste des utilisateurs %N")
+		io.put_string("%N 2 - Importer les informations du fichier utilisateurs.txt %N")
+		io.put_string("%N 3 - Ajouter un utilisateur %N")
+		io.put_string("%N 4 - Supprimer un utilisateur (par identifiant) %N")
 	end
 	
 	choix_commande : STRING is

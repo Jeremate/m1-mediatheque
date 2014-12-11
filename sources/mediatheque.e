@@ -23,12 +23,6 @@ feature
 			
 			create filename_utilisateurs.make_from_string("../ressources/utilisateurs.txt")
 			create filename_medias.make_from_string("../ressources/medias.txt")
-			--récupération utilisateurs
-			--lire_fichier_utilisateurs
-			--lire_fichier_medias
-			--affiche_menu
-			--afficher_medias
-			--afficher_utilisateurs
 			create interface.make
 			interface.accueil
 			from 
@@ -70,6 +64,18 @@ feature
 									command
 								when "r", "R", "retour" then
 									retour := True
+								when "1" then
+									afficher_utilisateurs
+									io.put_string("Appuyer sur Entrée pour continuer.")
+									io.read_line
+								when "2" then
+									lire_fichier_utilisateurs
+									io.put_string("Utilisateurs importés. Appuyer sur Entrée pour continuer.")
+									io.read_line
+								when "3" then
+									io.put_string("%N En cours de devellopement%N")
+								when "4" then
+									io.put_string("%N En cours de devellopement%N")
 								else
 									io.put_string("Commande inconnue%N")
 								end
@@ -86,6 +92,16 @@ feature
 									command
 								when "r", "R", "retour" then
 									retour := True
+								when "1" then
+									afficher_medias
+								when "2" then
+									lire_fichier_medias
+								when "3" then
+									io.put_string("%N En cours de devellopement%N")
+								when "4" then 
+									io.put_string("%N En cours de devellopement%N")
+								when "5" then
+									io.put_string("%N En cours de devellopement%N")
 								else
 									io.put_string("Commande inconnue%N")
 								end
@@ -102,6 +118,10 @@ feature
 									command
 								when "r", "R", "retour" then
 									retour := True
+								when "1" then
+									io.put_string("%N En cours de devellopement%N")
+								when "2" then
+									io.put_string("%N En cours de devellopement%N")
 								else
 									io.put_string("Commande inconnue%N")
 								end
@@ -112,12 +132,11 @@ feature
 						end
 					end
 				when "2" then
-					from 
-						interface.call_menu
+					from					
 					until
 						retour
 					loop
-						io.put_string(once "%NEntrer votre choix (Retour): ")
+						interface.call_menu
 						command := interface.choix_commande
 						inspect
 							command
@@ -130,8 +149,7 @@ feature
 				
 				else
 					io.put_string("Commande inconnue%N")
-				end
-				
+				end				
 			end
 		end
 		
@@ -169,18 +187,14 @@ feature
 					val.copy(cle_val.item(i).substring(cle_val.item(i).first_index_of('<')+1, cle_val.item(i).first_index_of('>')-1))
 					
 					inspect cle
-						when "Nom"
-						then nom.copy(val)
-						
-						when "Prenom"
-						then prenom.copy(val)
-						
-						when "Identifiant"
-						then identifiant.copy(val)
-						
-						when "Admin"
-						then 
-							if(val = "OUI") then
+						when "Nom" then 
+							nom.copy(val)						
+						when "Prenom" then
+							prenom.copy(val)	
+						when "Identifiant" then
+							identifiant.copy(val)						
+						when "Admin" then 
+							if (val.same_as("oui")) then
 								admin := True
 							else
 								admin := False
@@ -194,9 +208,8 @@ feature
 				else
 					create user.make_client(nom, prenom, identifiant)
 				end
-				utilisateurs.add_last(user)
-			end
-			
+				ajouter_utilisateur(user)
+			end	
 			filereader.disconnect
 		end
 	
@@ -324,6 +337,18 @@ feature
 			medias.item(indice).set_nombre(livre.nombre)
 		end
 	end	
+
+	
+---------------------------------
+--- AJOUTER UN UTILISATEUR
+---------------------------------		
+	ajouter_utilisateur(utilisateur : UTILISATEUR) is
+	do
+		if not (verification_utilisateur(utilisateur)) then
+			utilisateurs.add_last(utilisateur)
+		end
+	end	
+
 	
 ---------------------------------
 --- VERIFICATION DOUBLON DVD
@@ -357,7 +382,7 @@ feature
 	end	
 
 ---------------------------------
---- VERIFICATION DOUBLON LIVE
+--- VERIFICATION DOUBLON LIVRE
 ---------------------------------		
 	verification_livre(livre : LIVRE) : INTEGER is
 	local 
@@ -386,7 +411,24 @@ feature
 		end
 		Result := i
 	end	
-	
+
+---------------------------------
+--- VERIFICATION DOUBLON UTILISATEUR
+---------------------------------		
+	verification_utilisateur(utilisateur : UTILISATEUR) : BOOLEAN is
+	local 
+		i : INTEGER
+		test: BOOLEAN
+	do
+		test := False
+		from i := 0
+		until test = True or i > utilisateurs.count-1
+		loop
+			test := utilisateurs.item(i).compare(utilisateur)
+			i := i + 1
+		end
+		Result := test
+	end	
 	
 ---------------------------------
 --- AFFICHAGE DES UTILISATEURS
