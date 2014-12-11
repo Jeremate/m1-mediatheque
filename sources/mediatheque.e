@@ -14,7 +14,7 @@ feature
 	
 	make is
 		local
-			stop : BOOLEAN
+			stop, retour : BOOLEAN
 			command : STRING
 		do
 			-- Initialisation
@@ -24,19 +24,21 @@ feature
 			create filename_utilisateurs.make_from_string("../ressources/utilisateurs.txt")
 			create filename_medias.make_from_string("../ressources/medias.txt")
 			--récupération utilisateurs
-			lire_fichier_utilisateurs
-			lire_fichier_medias
+			--lire_fichier_utilisateurs
+			--lire_fichier_medias
 			--affiche_menu
 			--afficher_medias
 			--afficher_utilisateurs
 			create interface.make
-			--io.put_new_line
+			interface.accueil
 			from 
-				interface.ecran_accueil
+				
 			until
 				stop
 			loop
-				io.put_string(once "ENTRER VOTRE CHOIX: ")
+				interface.choix_principal
+				retour := False
+				io.put_string(once "%NEntrer votre choix (q pour quitter) : ")
 				io.flush
 				io.read_line
 				command := io.last_string.twin
@@ -46,6 +48,86 @@ feature
 					command
 				when "q", "Q", "quitter" then
 					stop := True
+				when "1" then
+					from 					
+					until
+						retour
+					loop
+						interface.call_menu_administrateur
+						command := interface.choix_commande
+						inspect
+							command
+						when "r", "R", "retour" then
+							retour := True
+						when "1" then
+							from 
+							until
+								retour
+							loop
+								interface.menu_gestion_utilisateurs
+								command := interface.choix_commande
+								inspect
+									command
+								when "r", "R", "retour" then
+									retour := True
+								else
+									io.put_string("Commande inconnue%N")
+								end
+							end
+							retour := False
+						when "2" then
+							from 
+							until
+								retour
+							loop
+								interface.menu_gestion_medias
+								command := interface.choix_commande
+								inspect
+									command
+								when "r", "R", "retour" then
+									retour := True
+								else
+									io.put_string("Commande inconnue%N")
+								end
+							end
+							retour := False
+						when "3" then
+							from 
+							until
+								retour
+							loop
+								interface.menu_gestion_emprunts
+								command := interface.choix_commande
+								inspect
+									command
+								when "r", "R", "retour" then
+									retour := True
+								else
+									io.put_string("Commande inconnue%N")
+								end
+							end
+							retour := False
+						else
+							io.put_string("Commande inconnue%N")
+						end
+					end
+				when "2" then
+					from 
+						interface.call_menu
+					until
+						retour
+					loop
+						io.put_string(once "%NEntrer votre choix (Retour): ")
+						command := interface.choix_commande
+						inspect
+							command
+						when "r", "R", "retour" then
+							retour := True
+						else
+							io.put_string("Commande inconnue%N")
+						end
+					end
+				
 				else
 					io.put_string("Commande inconnue%N")
 				end
