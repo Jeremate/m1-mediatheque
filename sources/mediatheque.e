@@ -27,7 +27,8 @@ feature
 			liste_acteur , liste_realisateur : ARRAY[STRING]
 			annee ,i: INTEGER
 			type : STRING
-			
+			emprunt : EMPRUNT
+			id_user_emprunt : STRING
 		do
 			-- Initialisation
 			create utilisateurs.with_capacity(0,0)
@@ -40,9 +41,7 @@ feature
 			interface.accueil
 			temps.update
 			lire_fichier_utilisateurs
-			--io.put_integer(temps.year*10000+temps.month*100+temps.day)
-			from 
-				
+			from 			
 			until
 				stop
 			loop
@@ -62,6 +61,7 @@ feature
 						admin := True
 					elseif utilisateurs.item(i).str_user(command) then
 						user := True
+						id_user_emprunt := command
 					end	
 					i := i+1
 				end
@@ -225,7 +225,6 @@ feature
 												io.put_string("Aucun media correspondant")
 											end
 										end
-										io.put_integer(res)
 										io.put_new_line
 									else
 										io.put_string("Liste des médias vide")
@@ -270,17 +269,25 @@ feature
 					until
 						retour
 					loop
-						interface.call_menu
+						interface.menu_gestion_emprunts
 						command := interface.choix_commande("%N Entrer votre choix (retour):")
 						inspect
 							command
 						when "r", "R", "retour" then
 							retour := True
+						when "1" then
+							res := rechercher_media
+							create emprunt.make_emprunt(medias.item(res).get_identifiant,id_user_emprunt)
+							test := media.item(res).emprunter
+							if test then
+								emprunts.add_last(emprunt)
+							end
+						when "2" then
+							io.put_string("%N En cours de devellopement%N")
 						else
 							io.put_string("Commande inconnue%N")
 						end
 					end
-				
 				else
 					io.put_string("%N Identifiant inconnu%N")
 				end				
@@ -674,6 +681,31 @@ feature
 		else
 			Result := tab.item(command.to_integer - 1)
 		end
+	end
+	
+	rechercher_media : INTEGER is
+	local
+		res : INTEGER
+		titre : STRING
+	do
+		res := 0
+		if medias.count-1 > 0 then
+			res := 0
+			from
+			until 
+				res > 0
+			loop
+				titre := interface.choix_commande("%N Titre du media à rechercher : ")
+				res := rechercher_media_titre(titre)
+				if res = 0 then
+					io.put_string("Aucun media correspondant")
+				end
+			end
+			io.put_new_line
+		else
+			io.put_string("Liste des médias vide")
+		end
+		Result := res
 	end
 	
 end

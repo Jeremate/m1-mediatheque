@@ -40,25 +40,30 @@ feature {ANY}
 ---------------------
 --EMPRUNT / RENDU
 ---------------------
-    	emprunter : BOOLEAN is
-    	require
-    	         nombre >= 0
-    	do
-    		if nombre > 0 then
-    			set_nombre(nombre-1)
-    			io.put_string("Emprunt effectué !%N")
-    			Result := True
-    		else
-    			io.put_string("Emprunt impossible, pas de stock disponible !%N")
-    			Result := False
-    		end
-    	end
+	emprunter : BOOLEAN is
+	require
+		nombre >= 0
+	do
+		if nombre > 0 then
+			set_nombre(nombre-1)
+			io.put_string("Emprunt effectué !%N")
+			Result := True
+		else
+			io.put_string("Emprunt impossible, pas de stock disponible !%N")
+			Result := False
+		end
+	end
     
-        rendre is
-        do
-           set_nombre(nombre+1)
-           io.put_string("Retour effectué !%N")
-        end
-	
+	rendre is
+	do
+		set_nombre(nombre+1)
+		io.put_string("Retour effectué !%N")
+	end
+
+	get_identifiant : STRING is
+	do
+		Result := titre
+	end
+		
 end -- classe MEDIA
 

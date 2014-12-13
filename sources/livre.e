@@ -1,6 +1,7 @@
 class LIVRE inherit MEDIA
 redefine 
-	afficher
+	afficher,
+	get_identifiant
 end
 
 creation {ANY}
@@ -27,6 +28,10 @@ feature {ANY}
 		Result := (titre.is_equal(livre.titre) and auteur.is_equal(livre.auteur))
 	end
 	
+	get_identifiant : STRING is
+	do
+		Result := titre + auteur
+	end
 	
 -----------------------------
 --- SETTERS

@@ -1,6 +1,7 @@
 class DVD inherit MEDIA
 redefine 
-	afficher
+	afficher,
+	get_identifiant
 end
 
 creation {ANY}
@@ -63,10 +64,10 @@ feature {ANY}
 		Result := res
 	end
 	
------------------------------
---- SETTERS
------------------------------
-	
+	get_identifiant : STRING is
+	do
+		Result := titre + get_string_realisateur
+	end
 	
 	
 end 
