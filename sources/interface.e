@@ -15,7 +15,7 @@ feature {ANY}
 
 	accueil is
 	do
-	   encart("Bienvenue sur le logiciel de gestion de la m�diath�que")
+	   encart("Bienvenue sur le logiciel de gestion de la médiathèque")
 	end
 
 	
@@ -110,11 +110,18 @@ feature {ANY}
 		io.put_string("%N 4 - Supprimer un utilisateur (par identifiant) %N")
 	end
 	
-	choix_commande : STRING is
+	menu_choix_media is 
+	do
+		encart("Choix média à ajouter")
+		io.put_string("%N 1 - Ajouter un dvd %N")
+		io.put_string("%N 2 - Ajouter un livre %N")
+	end
+	
+	choix_commande(info : STRING) : STRING is
 	local
 		command : STRING
 	do
-		io.put_string(once "%NEntrer votre choix (retour): ")
+		io.put_string(info)
 		io.flush
 		io.read_line
 		command := io.last_string.twin
@@ -123,4 +130,10 @@ feature {ANY}
 		Result := command
 	end
 
+	continuer is
+	do
+		io.put_string("Appuyer sur Entrée pour continuer.")
+		io.read_line
+	end
+	
 end -- classe MEDIATHEQUE

@@ -21,6 +21,7 @@ feature {ANY}
 		create liste_acteur.with_capacity(0, 0)
 		titre := titre_d
 		nombre := nombre_d
+		nombre_exemplaire := nombre_d
 		annee := annee_d
 		from i:=0
 		until i > liste_realisateur_d.count-1

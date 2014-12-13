@@ -9,46 +9,71 @@ feature {ANY}
 	filename_utilisateurs: STRING -- chemin vers le fichier utilisateurs
 	filename_medias: STRING --chemin vers le fichier medias
 	interface : INTERFACE
+	emprunts : ARRAY[EMPRUNT]
 	
 feature
 	
 	make is
 		local
-			stop, retour : BOOLEAN
+			stop, retour,admin , user : BOOLEAN
 			command : STRING
+			utilisateur : UTILISATEUR
+			livre : LIVRE
+			dvd :  DVD
+			nom, prenom, identifiant, new_admin : STRING
+			temps : TIME
+			nombre_livre, nombre_dvd ,res : INTEGER
+			auteur , titre ,nbr_str_livre, nbr_str_dvd, realisateur, acteur, annee_dvd: STRING
+			liste_acteur , liste_realisateur : ARRAY[STRING]
+			annee ,i: INTEGER
+			type : STRING
+			
 		do
 			-- Initialisation
 			create utilisateurs.with_capacity(0,0)
-			create medias.with_capacity(0, 0)
+			create medias.with_capacity(0,0)
+			create emprunts.with_capacity(0,0)
 			
 			create filename_utilisateurs.make_from_string("../ressources/utilisateurs.txt")
 			create filename_medias.make_from_string("../ressources/medias.txt")
 			create interface.make
 			interface.accueil
+			temps.update
+			lire_fichier_utilisateurs
+			--io.put_integer(temps.year*10000+temps.month*100+temps.day)
 			from 
 				
 			until
 				stop
 			loop
-				interface.choix_principal
 				retour := False
-				io.put_string(once "%NEntrer votre choix (q pour quitter) : ")
+				io.put_string(once "%N Entrer votre identifiant (q pour quitter) : ")
 				io.flush
 				io.read_line
 				command := io.last_string.twin
 				command.left_adjust
 				command.right_adjust
-				inspect
-					command
-				when "q", "Q", "quitter" then
+				admin := False
+				user := False
+				from i:= 0
+				until i > utilisateurs.count-1
+				loop
+					if utilisateurs.item(i).str_admin(command) then
+						admin := True
+					elseif utilisateurs.item(i).str_user(command) then
+						user := True
+					end	
+					i := i+1
+				end
+				if command.is_equal("q") then
 					stop := True
-				when "1" then
+				elseif admin then
 					from 					
 					until
 						retour
 					loop
 						interface.call_menu_administrateur
-						command := interface.choix_commande
+						command := interface.choix_commande("%N Entrer votre choix (retour): ")
 						inspect
 							command
 						when "r", "R", "retour" then
@@ -59,25 +84,43 @@ feature
 								retour
 							loop
 								interface.menu_gestion_utilisateurs
-								command := interface.choix_commande
+								command := interface.choix_commande("%N Entrer votre choix (retour): ")
 								inspect
 									command
 								when "r", "R", "retour" then
 									retour := True
 								when "1" then
 									afficher_utilisateurs
-									io.put_string("Appuyer sur Entrée pour continuer.")
-									io.read_line
 								when "2" then
 									lire_fichier_utilisateurs
-									io.put_string("Utilisateurs importés. Appuyer sur Entrée pour continuer.")
-									io.read_line
 								when "3" then
-									io.put_string("%N En cours de devellopement%N")
+									nom := interface.choix_commande("%N  Nom de l'utilisateur : ")
+									prenom := interface.choix_commande("%N Prenom de l'utilisateur : ")
+									identifiant := interface.choix_commande("%N Identifiant de l'utilisateur : ")
+									new_admin := ""
+									from
+									until
+										new_admin.is_equal("1") or new_admin.is_equal("0")
+									loop
+										new_admin := interface.choix_commande("Grade(1 pour admin, 0 sinon)")
+										inspect 
+											new_admin
+										when "1" then
+											create utilisateur.make_admin(nom,prenom,identifiant)
+										when "0" then
+											create utilisateur.make_client(nom,prenom,identifiant)
+										else
+											io.put_string("Commande inconnue%N")
+										end
+										ajouter_utilisateur(utilisateur)
+									end
 								when "4" then
 									io.put_string("%N En cours de devellopement%N")
 								else
 									io.put_string("Commande inconnue%N")
+								end
+								if not retour then
+									interface.continuer
 								end
 							end
 							retour := False
@@ -87,7 +130,7 @@ feature
 								retour
 							loop
 								interface.menu_gestion_medias
-								command := interface.choix_commande
+								command := interface.choix_commande("%N Entrer votre choix (retour): ")
 								inspect
 									command
 								when "r", "R", "retour" then
@@ -97,13 +140,101 @@ feature
 								when "2" then
 									lire_fichier_medias
 								when "3" then
-									io.put_string("%N En cours de devellopement%N")
+									from
+									until
+										retour
+									loop
+										interface.menu_choix_media
+										command := interface.choix_commande("%N Entrer votre choix (retour): ")
+										inspect
+											command
+										when "r", "R", "retour" then
+											retour := True
+										when "1" then
+											create liste_realisateur.with_capacity(0, 0)		
+											create liste_acteur.with_capacity(0, 0)
+											titre := interface.choix_commande("%N Titre du dvd : ")
+											realisateur := interface.choix_commande("%N Réalistaeur (1 pour stop) : ")
+											from 
+											until
+												realisateur.is_equal("1") and liste_realisateur.count >= 1
+											loop
+												realisateur := interface.choix_commande("%N Réalistaeur (1 pour stop) : ")
+												liste_realisateur.add_last(realisateur)
+											end
+											acteur := interface.choix_commande("%N Acteur (1 pour stop) : ")
+											from 
+											until
+												acteur.is_equal("1") and liste_acteur.count >= 1
+											loop
+												acteur := interface.choix_commande("%N Acteur (1 pour stop) : ")
+												liste_acteur.add_last(acteur)
+											end
+											type := interface.choix_commande("%N Type du dvd (coffret) : ")
+											nbr_str_dvd := interface.choix_commande("%N Nombre d'exemplaire du dvd : ")
+											from 
+											until
+												nbr_str_dvd.is_integer
+											loop
+												nbr_str_dvd := interface.choix_commande("%N Nombre d'exemplaire du livre : ")
+											end
+											nombre_dvd := nbr_str_dvd.to_integer
+											annee_dvd := interface.choix_commande("%N Année dvd : ")
+											from 
+											until
+												annee_dvd.is_integer
+											loop
+												annee_dvd := interface.choix_commande("Nombre d'exemplaire du livre : ")
+											end
+											annee := nbr_str_dvd.to_integer
+											create dvd.make_dvd(titre,annee, liste_realisateur,liste_acteur,type,nombre_dvd)
+											ajouter_dvd(dvd)
+										when "2" then
+											titre := interface.choix_commande("%N Titre du livre : ")
+											auteur := interface.choix_commande("%N Auteur du livre : ")
+											nbr_str_livre := interface.choix_commande("%N Nombre d'exemplaire du livre : ")
+											from 
+											until
+												nbr_str_livre.is_integer
+											loop
+												nbr_str_livre := interface.choix_commande("%N Nombre d'exemplaire du livre : ")
+											end
+											nombre_livre := nbr_str_livre.to_integer
+											create livre.make_livre(titre,auteur,nombre_livre)
+											ajouter_livre(livre)
+										else
+											io.put_string("Commande inconnue%N")
+										end
+										io.put_boolean(retour)
+										if not retour then
+											interface.continuer
+										end
+									end
 								when "4" then 
 									io.put_string("%N En cours de devellopement%N")
 								when "5" then
-									io.put_string("%N En cours de devellopement%N")
+									if medias.count-1 > 0 then
+										res := 0
+										from
+										until 
+											res > 0
+										loop
+											titre := interface.choix_commande("%N Titre du media à rechercher : ")
+											res := rechercher_media_titre(titre)
+											if res = 0 then
+												io.put_string("Aucun media correspondant")
+											end
+										end
+										io.put_integer(res)
+										io.put_new_line
+									else
+										io.put_string("Liste des médias vide")
+									end
 								else
 									io.put_string("Commande inconnue%N")
+								end
+								if not retour then
+									interface.continuer
 								end
 							end
 							retour := False
@@ -113,7 +244,7 @@ feature
 								retour
 							loop
 								interface.menu_gestion_emprunts
-								command := interface.choix_commande
+								command := interface.choix_commande("%N Entrer votre choix (retour):")
 								inspect
 									command
 								when "r", "R", "retour" then
@@ -125,19 +256,22 @@ feature
 								else
 									io.put_string("Commande inconnue%N")
 								end
+								if not retour then
+									interface.continuer
+								end
 							end
 							retour := False
 						else
 							io.put_string("Commande inconnue%N")
 						end
 					end
-				when "2" then
+				elseif user then
 					from					
 					until
 						retour
 					loop
 						interface.call_menu
-						command := interface.choix_commande
+						command := interface.choix_commande("%N Entrer votre choix (retour):")
 						inspect
 							command
 						when "r", "R", "retour" then
@@ -148,7 +282,7 @@ feature
 					end
 				
 				else
-					io.put_string("Commande inconnue%N")
+					io.put_string("%N Identifiant inconnu%N")
 				end				
 			end
 		end
@@ -318,8 +452,10 @@ feature
 		indice := verification_dvd(dvd)
 		if (indice = -1) then
 			medias.add_last(dvd)
+			io.put_string(" Dvd crée.%N")
 		else
 			medias.item(indice).set_nombre(dvd.nombre)
+			io.put_string(" Dvd existant. Augmentation du nombre disponible.%N")
 		end
 	end	
 
@@ -333,8 +469,10 @@ feature
 		indice := verification_livre(livre)
 		if (indice = -1) then
 			medias.add_last(livre)
+			io.put_string(" Livre crée.%N")
 		else
 			medias.item(indice).set_nombre(livre.nombre)
+			io.put_string(" Livre crée. Augmentation du nombre disponible.%%N")
 		end
 	end	
 
@@ -346,6 +484,9 @@ feature
 	do
 		if not (verification_utilisateur(utilisateur)) then
 			utilisateurs.add_last(utilisateur)
+			io.put_string("Utilisateur ajouté.%N")
+		else
+			io.put_string(" Utilisateur existant.%N")
 		end
 	end	
 
@@ -468,4 +609,71 @@ feature
 		end
 		io.put_new_line
 	end
+	
+---------------------------------
+--- IDENTIFIANT EXISTE
+---------------------------------		
+	identifiant_existe(id : STRING) : BOOLEAN is
+	local 
+		i : INTEGER
+		test : BOOLEAN
+	do
+		test := False
+		from i := 0
+		until i > utilisateurs.count-1 or test
+		loop
+			if utilisateurs.item(i).get_identifiant.is_equal(id) then
+				test := True
+			end
+			i := i+1
+		end
+		Result := test
+	end
+	
+---------------------------------
+--- RECHERCHER UN MEDIA PAR TITRE
+---------------------------------		
+	rechercher_media_titre(titre : STRING) : INTEGER is
+	local 
+		i , j: INTEGER
+		test : BOOLEAN
+		tab : ARRAY[INTEGER]
+		command : STRING
+	do
+		test := False
+		create tab.with_capacity(0, 0)
+		j:=0
+		from i := 0
+		until i > medias.count-1
+		loop
+			if medias.item(i).get_titre.has_substring(titre) then
+				io.put_integer(j+1)
+				io.put_string(" : " + medias.item(i).afficher)
+				tab.add_last(i)
+				io.put_new_line
+				j := j + 1
+			end
+			i := i+1
+		end
+		from 
+		until test or tab.count-1 = -1
+		loop	
+			command := interface.choix_commande("Media à selectionner : ")
+			from 
+			until 
+				command.is_integer
+			loop
+				command := interface.choix_commande("Media à selectionner : ")
+			end
+			if command.to_integer-1 > -1 and command.to_integer-1 <= tab.count-1 then
+				test := True
+			end
+		end
+		if tab.count-1 = -1 then
+			Result := 0
+		else
+			Result := tab.item(command.to_integer - 1)
+		end
+	end
+	
 end

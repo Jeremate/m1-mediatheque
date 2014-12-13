@@ -50,4 +50,18 @@ feature {ANY}
 	end
 
 	
+	str_user(valeur : STRING) : BOOLEAN is
+	do
+		Result := identifiant.is_equal(valeur) and admin = False
+	end
+	
+	str_admin(valeur : STRING) : BOOLEAN is
+	do
+		Result := identifiant.is_equal(valeur) and admin = True
+	end
+	
+	get_identifiant: STRING is
+	do
+		Result := identifiant
+	end
 end -- fermeture class
