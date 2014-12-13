@@ -15,14 +15,13 @@ feature
 	
 	make is
 		local
-			stop, retour,admin , user : BOOLEAN
+			stop, retour,admin , user ,test: BOOLEAN
 			command : STRING
 			utilisateur : UTILISATEUR
 			livre : LIVRE
 			dvd :  DVD
 			nom, prenom, identifiant, new_admin : STRING
-			temps : TIME
-			nombre_livre, nombre_dvd ,res : INTEGER
+			nombre_livre, nombre_dvd ,res ,nbr_emprunt : INTEGER
 			auteur , titre ,nbr_str_livre, nbr_str_dvd, realisateur, acteur, annee_dvd: STRING
 			liste_acteur , liste_realisateur : ARRAY[STRING]
 			annee ,i: INTEGER
@@ -39,7 +38,6 @@ feature
 			create filename_medias.make_from_string("../ressources/medias.txt")
 			create interface.make
 			interface.accueil
-			temps.update
 			lire_fichier_utilisateurs
 			from 			
 			until
@@ -278,12 +276,16 @@ feature
 						when "1" then
 							res := rechercher_media
 							create emprunt.make_emprunt(medias.item(res).get_identifiant,id_user_emprunt)
-							test := media.item(res).emprunter
+							test := medias.item(res).emprunter
 							if test then
 								emprunts.add_last(emprunt)
 							end
 						when "2" then
-							io.put_string("%N En cours de devellopement%N")
+							nbr_emprunt := rechercher_emprunt(id_user_emprunt)
+							if nbr_emprunt >= 0 then
+								emprunts.item(nbr_emprunt).set_date_retour
+								retour_media(emprunts.item(nbr_emprunt).get_id_media)
+							end
 						else
 							io.put_string("Commande inconnue%N")
 						end
@@ -677,10 +679,97 @@ feature
 			end
 		end
 		if tab.count-1 = -1 then
-			Result := 0
+			Result := -1
 		else
 			Result := tab.item(command.to_integer - 1)
 		end
+	end
+
+
+---------------------------------
+--- RETOUR D'UN MEDIA
+---------------------------------			
+	retour_media(id_media : STRING) is
+	local
+		i : INTEGER
+	do
+		from i :=0
+		until i > medias.count-1
+		loop
+			if medias.item(i).get_identifiant.is_equal(id_media) then
+				medias.item(i).rendre
+			end
+			i := i+1
+		end
+	end
+	
+	
+	get_liste_emprunt(identifiant : STRING) : INTEGER is
+	local
+		i , j: INTEGER
+		test : BOOLEAN
+		command , res: STRING
+		tab : ARRAY[INTEGER]
+	do
+		test := False
+		create tab.with_capacity(0, 0)
+		j:=0
+		from i := 0
+		until i > emprunts.count-1
+		loop
+			res := emprunts.item(i).get_identifiant
+			if res.is_equal(identifiant) and emprunts.item(i).get_date_retour = 99999999 then
+				io.put_integer(j+1)
+				io.put_string(" : " + emprunts.item(i).afficher)
+				tab.add_last(i)
+				io.put_new_line
+				j := j + 1
+			end
+			i := i+1
+		end
+		from 
+		until test or tab.count-1 = -1
+		loop	
+			command := interface.choix_commande("Emprunt à selectionner : ")
+			from 
+			until 
+				command.is_integer
+			loop
+				command := interface.choix_commande("Emprunt à selectionner : ")
+			end
+			
+			if command.to_integer-1 > -1 and command.to_integer-1 <= tab.count-1 then
+				test := True
+			end
+		end
+		if tab.count-1 = -1 then
+			Result := -1
+		else
+			Result := tab.item(command.to_integer - 1)
+		end
+	end
+	
+	rechercher_emprunt(identifiant : STRING) : INTEGER is
+	local
+		res : INTEGER
+	do
+		res := -2
+		if emprunts.count-1 >= 0 then
+			from
+			until 
+				res >= -1
+			loop
+				res := get_liste_emprunt(identifiant)
+				if res = -1 then
+					io.put_string("Aucun emprunt pour c'est identifiant")
+					Result := res
+				end
+			end
+			io.put_new_line
+		else
+			io.put_string("Liste des emprunts vide")
+		end
+		Result := res
 	end
 	
 	rechercher_media : INTEGER is
@@ -688,16 +777,15 @@ feature
 		res : INTEGER
 		titre : STRING
 	do
-		res := 0
-		if medias.count-1 > 0 then
-			res := 0
+		res := -1
+		if medias.count-1 >= 0 then
 			from
 			until 
-				res > 0
+				res >= 0
 			loop
 				titre := interface.choix_commande("%N Titre du media à rechercher : ")
 				res := rechercher_media_titre(titre)
-				if res = 0 then
+				if res = -1 then
 					io.put_string("Aucun media correspondant")
 				end
 			end

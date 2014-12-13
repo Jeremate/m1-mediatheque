@@ -45,7 +45,7 @@ feature {ANY}
 		nombre >= 0
 	do
 		if nombre > 0 then
-			set_nombre(nombre-1)
+			nombre := nombre -1
 			io.put_string("Emprunt effectué !%N")
 			Result := True
 		else
@@ -56,7 +56,7 @@ feature {ANY}
     
 	rendre is
 	do
-		set_nombre(nombre+1)
+		nombre := nombre + 1
 		io.put_string("Retour effectué !%N")
 	end
 
