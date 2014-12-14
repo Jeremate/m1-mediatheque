@@ -93,16 +93,38 @@ feature
 								when "2" then
 									lire_fichier_utilisateurs
 								when "3" then
+									-- contrôle de saisie du nom
 									nom := interface.choix_commande("%N  Nom de l'utilisateur : ")
+									from
+									until not est_vide(nom)
+									loop
+										nom := interface.choix_commande("%N  Nom de l'utilisateur : ")
+									end
+									
+									-- contrôle de saisie du prénom
 									prenom := interface.choix_commande("%N Prenom de l'utilisateur : ")
+									from
+									until not est_vide(prenom)
+									loop
+										prenom := interface.choix_commande("%N Prenom de l'utilisateur : ")
+									end
+									
+									-- contrôle de saisie de l'identifiant
 									identifiant := interface.choix_commande("%N Identifiant de l'utilisateur : ")
+									from
+									until not identifiant_existe(identifiant) and not est_vide(identifiant)
+									loop
+										io.put_string("%N Cet identifiant existe déjà.")
+										identifiant := interface.choix_commande("%N Identifiant de l'utilisateur : ")
+									end
+									
 									new_admin := ""
 									from
 									until
 										new_admin.is_equal("1") or new_admin.is_equal("0")
 									loop
 										new_admin := interface.choix_commande("Grade(1 pour admin, 0 sinon) : ")
-										if new_admin.is_equal("") then new_admin := "3" end
+										if est_vide(new_admin) then new_admin := "3" end
 										inspect 
 											new_admin
 										when "1" then
@@ -112,8 +134,8 @@ feature
 										else
 											io.put_string("Commande inconnue%N")
 										end
-										ajouter_utilisateur(utilisateur)
 									end
+									ajouter_utilisateur(utilisateur)
 								when "4" then
 									io.put_string("%N En cours de développement%N")
 								else
