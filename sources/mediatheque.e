@@ -718,7 +718,7 @@ feature
 		from i := 0
 		until i > medias.count-1
 		loop
-			if medias.item(i).get_titre.has_substring(titre) then
+			if medias.item(i).get_titre.to_lower.has_substring(titre.to_lower) then
 				io.put_integer(j+1)
 				io.put_string(" : " + medias.item(i).afficher)
 				tab.add_last(i)
