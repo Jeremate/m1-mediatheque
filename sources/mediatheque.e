@@ -242,7 +242,7 @@ feature
 								if not retour then
 									interface.continuer
 								end
-								retour := False
+								--retour := False
 							end
 							retour := False
 						when "3" then
@@ -489,7 +489,7 @@ feature
 		indice := verification_dvd(dvd)
 		if (indice = -1) then
 			medias.add_last(dvd)
-			io.put_string(" Dvd crée.%N")
+			io.put_string(" Dvd créé.%N")
 		else
 			medias.item(indice).set_nombre(dvd.nombre)
 			io.put_string(" Dvd existant. Augmentation du nombre disponible.%N")
@@ -506,7 +506,7 @@ feature
 		indice := verification_livre(livre)
 		if (indice = -1) then
 			medias.add_last(livre)
-			io.put_string(" Livre crée.%N")
+			io.put_string(" Livre créé.%N")
 		else
 			medias.item(indice).set_nombre(livre.nombre)
 			io.put_string(" Livre existant. Augmentation du nombre disponible.%N")
