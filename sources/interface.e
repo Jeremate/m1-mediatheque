@@ -145,4 +145,4 @@ feature {ANY}
 		io.read_line
 	end
 	
-end -- classe MEDIATHEQUE
+end -- classe INTERFACE
