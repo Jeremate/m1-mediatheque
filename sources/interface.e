@@ -103,6 +103,13 @@ feature {ANY}
 		io.put_string("%N 4 - Consulter les retards %N")
 	end
 	
+	menu_gestion_emprunts_user is
+	do
+		encart("Gestion des emprunts")
+		io.put_string("%N 1 - Emprunter un media %N")
+		io.put_string("%N 2 - Rendre un media %N")
+	end
+	
 	menu_gestion_utilisateurs is
 	do
 		encart("Gestion des utilisateurs")

@@ -100,7 +100,8 @@ feature
 									until
 										new_admin.is_equal("1") or new_admin.is_equal("0")
 									loop
-										new_admin := interface.choix_commande("Grade(1 pour admin, 0 sinon)")
+										new_admin := interface.choix_commande("Grade(1 pour admin, 0 sinon) : ")
+										if new_admin.is_equal("") then new_admin := "3" end
 										inspect 
 											new_admin
 										when "1" then
@@ -217,6 +218,7 @@ feature
 											interface.continuer
 										end
 									end
+									retour := False
 								when "4" then 
 									io.put_string("%N En cours de développement%N")
 								when "5" then
@@ -240,9 +242,8 @@ feature
 									io.put_string("Commande inconnue%N")
 								end
 								if not retour then
-									interface.continuer
+									interface.continuer									
 								end
-								retour := False
 							end
 							retour := False
 						when "3" then
@@ -281,7 +282,7 @@ feature
 					until
 						retour
 					loop
-						interface.menu_gestion_emprunts
+						interface.menu_gestion_emprunts_user
 						command := interface.choix_commande("%N Entrer votre choix (r pour retour):")
 						inspect
 							command
@@ -332,53 +333,54 @@ feature
 			loop
 				filereader.read_line
 				buffer := filereader.last_string
-				admin := False -- init par défaut
-				nom := ""
-				prenom := ""
-				identifiant := ""
-				nb_occurence := buffer.occurrences(';')
-				debut := 1
-				from i := 1
-				until i > nb_occurence+1
-				loop
-					i := i+1
-					fin := buffer.index_of(';',debut)
-					if (fin = 0) then
-						fin := buffer.count
-					end
-					if (buffer.substring(debut,fin).has_substring("Nom")) then
-						valeur := buffer.substring(debut,fin)
-						nom := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
-						debut := fin + 1
-					end
-					if (buffer.substring(debut,fin).has_substring("Prenom")) then
-						valeur := buffer.substring(debut,fin)
-						prenom := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
-						debut := fin + 1
-					end
-					if (buffer.substring(debut,fin).has_substring("Identifiant")) then
-						valeur := buffer.substring(debut,fin)
-						identifiant := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
-						debut := fin + 1
-					end
-					if (buffer.substring(debut,fin).has_substring("Admin")) then
-						valeur := buffer.substring(debut,fin)
-						str_admin := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
-						if (str_admin.same_as("oui")) then
-							admin := True
-						else
-							admin := False
+				if not buffer.is_equal("") then
+					admin := False -- init par défaut
+					nom := ""
+					prenom := ""
+					identifiant := ""
+					nb_occurence := buffer.occurrences(';')
+					debut := 1
+					from i := 1
+					until i > nb_occurence+1
+					loop
+						i := i+1
+						fin := buffer.index_of(';',debut)
+						if (fin = 0) then
+							fin := buffer.count
 						end
-						debut := fin + 1
+						if (buffer.substring(debut,fin).has_substring("Nom")) then
+							valeur := buffer.substring(debut,fin)
+							nom := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
+							debut := fin + 1
+						end
+						if (buffer.substring(debut,fin).has_substring("Prenom")) then
+							valeur := buffer.substring(debut,fin)
+							prenom := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
+							debut := fin + 1
+						end
+						if (buffer.substring(debut,fin).has_substring("Identifiant")) then
+							valeur := buffer.substring(debut,fin)
+							identifiant := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
+							debut := fin + 1
+						end
+						if (buffer.substring(debut,fin).has_substring("Admin")) then
+							valeur := buffer.substring(debut,fin)
+							str_admin := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
+							if (str_admin.same_as("oui")) then
+								admin := True
+							else
+								admin := False
+							end
+							debut := fin + 1
+						end	
 					end
-					
+					if (admin) then
+						create user.make_admin(nom, prenom, identifiant)
+					else
+						create user.make_client(nom, prenom, identifiant)
+					end
+					ajouter_utilisateur(user)
 				end
-				if (admin) then
-					create user.make_admin(nom, prenom, identifiant)
-				else
-					create user.make_client(nom, prenom, identifiant)
-				end
-				ajouter_utilisateur(user)
 			end	
 			filereader.disconnect
 		end
