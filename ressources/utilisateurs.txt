@@ -5,4 +5,5 @@ Nom<Bolivar> ; Prenom<Anatole> ; Identifiant<anabol> ; Admin<OUI>
 Nom<Haddock> ; Prenom<Colin> ; Identifiant<colhad>
 Nom<Bocasa> ; Prenom<Tryphon> ; Identifiant<trybo>
 Nom<Patacaisse> ; Prenom<Babar> ; Identifiant<babapa>
-Nom<test>;Prenom<test>;Identifiant<test>;Admin<Oui>
+Nom<Klauer>;Prenom<Jérémy>;Identifiant<klauerj>;Admin<Oui>
+Nom<Bocéno>; Prenom<Paul-Jakez>; Identifiant<bocenopj>
