@@ -20,7 +20,7 @@ feature {ANY}
 	
 	afficher : STRING is
 	do
-		Result := Precursor + " " + auteur
+		Result := Precursor + ", écrit par " + auteur + " | LIVRE"
 	end
 
 	compare(livre : LIVRE) : BOOLEAN is

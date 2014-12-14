@@ -16,7 +16,7 @@ feature {ANY}
 	
 	afficher: STRING is
 	do
-		Result := titre + " "+ nombre.to_string
+		Result := " " + titre + ", nombre disponible :"+ nombre.to_string
 	end
 	
 ---------------------

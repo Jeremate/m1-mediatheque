@@ -99,6 +99,8 @@ feature {ANY}
 		encart("Gestion des emprunts")
 		io.put_string("%N 1 - Emprunter un media %N")
 		io.put_string("%N 2 - Rendre un media %N")
+		io.put_string("%N 3 - Consulter les emprunts en cours %N")
+		io.put_string("%N 4 - Consulter les retards %N")
 	end
 	
 	menu_gestion_utilisateurs is

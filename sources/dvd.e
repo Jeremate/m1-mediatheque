@@ -41,7 +41,7 @@ feature {ANY}
 	
 	afficher : STRING is
 	do
-		Result := Precursor + " " + annee.to_string +" " + type + get_string_realisateur
+		Result := Precursor + ", de : " + annee.to_string +", type :" + type + ", réalisé par :"+ get_string_realisateur + " | DVD"
 	end
 
 	compare(dvd : DVD) : BOOLEAN is
