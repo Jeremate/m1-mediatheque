@@ -158,7 +158,7 @@ feature
 												realisateur.is_equal("1") and liste_realisateur.count-1 > -1
 											loop
 												
-												if realisateur.is_equal("1") then
+												if realisateur.is_equal("1") or est_vide(realisateur) then
 													io.put_string("Aucun réalisateur renseigné. %N")
 												else
 													liste_realisateur.add_last(realisateur)
@@ -171,7 +171,7 @@ feature
 												acteur.is_equal("1") and liste_acteur.count-1 > -1
 											loop
 												
-												if acteur.is_equal("1") then
+												if acteur.is_equal("1") or est_vide(acteur) then
 													io.put_string("Aucun acteur renseigné. %N")
 												else	
 													liste_acteur.add_last(acteur)
@@ -179,7 +179,8 @@ feature
 												acteur := interface.choix_commande("%N Acteur (1 pour stop) : ")
 											end
 											type := interface.choix_commande("%N Type du dvd (coffret) : ")
-											nbr_str_dvd := interface.choix_commande("%N Nombre d'exemplaire du dvd : ")
+											create nbr_str_dvd.make_empty
+-- := interface.choix_commande("%N Nombre d'exemplaire du dvd : ")
 											from 
 											until
 												nbr_str_dvd.is_integer
@@ -234,7 +235,7 @@ feature
 										end
 										io.put_new_line
 									else
-										io.put_string("Liste des médias vide")
+										io.put_string("Liste des médias vide.%N")
 									end
 								else
 									io.put_string("Commande inconnue%N")
@@ -823,7 +824,7 @@ feature
 			end
 			io.put_new_line
 		else
-			io.put_string("Liste des emprunts vide")
+			io.put_string("Liste des emprunts vide.%N")
 		end
 		Result := res
 	end
@@ -847,9 +848,18 @@ feature
 			end
 			io.put_new_line
 		else
-			io.put_string("Liste des médias vide")
+			io.put_string("Liste des médias vide.%N")
 		end
 		Result := res
 	end
 	
+---------------------------------
+--- Fonctions utiles
+---------------------------------
+	est_vide(valeur : STRING) : BOOLEAN is
+	do
+		valeur.left_adjust
+		valeur.right_adjust
+		Result := valeur.is_empty
+	end
 end
