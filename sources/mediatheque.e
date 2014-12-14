@@ -43,6 +43,7 @@ feature
 			until
 				stop
 			loop
+				-- connexion
 				retour := False
 				io.put_string(once "%N Entrer votre identifiant (q pour quitter) : ")
 				io.flush
@@ -180,8 +181,8 @@ feature
 												acteur := interface.choix_commande("%N Acteur (1 pour stop) : ")
 											end
 											type := interface.choix_commande("%N Type du dvd (coffret) : ")
+											
 											create nbr_str_dvd.make_empty
--- := interface.choix_commande("%N Nombre d'exemplaire du dvd : ")
 											from 
 											until
 												nbr_str_dvd.is_integer
