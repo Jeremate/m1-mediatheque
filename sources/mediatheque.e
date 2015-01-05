@@ -138,7 +138,7 @@ feature
 									ajouter_utilisateur(utilisateur,True)
 								when "4" then
 								-- Suppression utilisateur
-									io.put_string("%N En cours de développement%N")
+									test_suppression := supprimer_utilisateur
 								else
 									io.put_string("Commande inconnue%N")
 								end
@@ -248,6 +248,8 @@ feature
 									test_suppression := modifier_media
 									if test_suppression = True then
 										io.put_string("Média supprimé.%N")
+									else
+										io.put_string("Suppresion impossible. Le média est emprunté.")
 									end
 								when "5" then
 									if medias.count-1 > 0 then
@@ -257,7 +259,7 @@ feature
 											res > 0
 										loop
 											titre := interface.choix_commande("%N Titre du media à rechercher : ")
-											res := rechercher_media_titre(titre,True)
+											res := rechercher_media_titre(titre,False)
 											if res = -1 then
 												io.put_string("Aucun media correspondant")
 											end
@@ -958,7 +960,7 @@ feature
 				res >= 0
 			loop		
 				titre := interface.choix_commande("%N Titre du media à rechercher : ")
-				res := rechercher_media_titre(titre,False)
+				res := rechercher_media_titre(titre,True)
 				if res = -1 then
 					io.put_string("Aucun media correspondant")
 				else
@@ -1014,22 +1016,27 @@ feature
 			until
 				res >= 0
 			loop		
-				identifiant := interface.choix_commande("%N  du media à rechercher : ")
+				identifiant := interface.choix_commande("%N Identifiant de l'utilisateur à rechercher : ")
 				from i := 0
 				until
 					i > utilisateurs.count-1
 				loop
 					if utilisateurs.item(i).get_identifiant.is_equal(identifiant) then
+						res := 0
 						if a_des_emprunts(identifiant) then
 							io.put_string("Suppression impossible l'utilisateur à des emprunts en cours.")
 						else
+							utilisateurs.remove(i)
 							io.put_string("Utilisateur supprimé")
 							bol := True
-							res := 0
 						end
 					end
 					i := i + 1 
-				end				
+				end
+				if res = -1 then
+					res = 1
+					io.put_string("Identifiant inconnu")
+				end
 			end
 		else
 			io.put_string("Liste des utilisateurs vide.%N")
