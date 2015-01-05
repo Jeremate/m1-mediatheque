@@ -118,7 +118,6 @@ feature
 										io.put_string("%N Cet identifiant existe déjà.")
 										identifiant := interface.choix_commande("%N Identifiant de l'utilisateur : ")
 									end
-									
 									new_admin := ""
 									from
 									until
@@ -138,6 +137,7 @@ feature
 									end
 									ajouter_utilisateur(utilisateur,True)
 								when "4" then
+								-- Suppression utilisateur
 									io.put_string("%N En cours de développement%N")
 								else
 									io.put_string("Commande inconnue%N")
@@ -245,7 +245,7 @@ feature
 									end
 									retour := False
 								when "4" then 
-									test_suppression := supprimer_media
+									test_suppression := modifier_media
 									if test_suppression = True then
 										io.put_string("Média supprimé.%N")
 									end
@@ -257,7 +257,7 @@ feature
 											res > 0
 										loop
 											titre := interface.choix_commande("%N Titre du media à rechercher : ")
-											res := rechercher_media_titre(titre)
+											res := rechercher_media_titre(titre,True)
 											if res = -1 then
 												io.put_string("Aucun media correspondant")
 											end
@@ -721,7 +721,7 @@ feature
 ---------------------------------
 --- RECHERCHER UN MEDIA PAR TITRE
 ---------------------------------		
-	rechercher_media_titre(titre : STRING) : INTEGER is
+	rechercher_media_titre(titre : STRING ; flag : BOOLEAN) : INTEGER is
 	local 
 		i , j: INTEGER
 		test : BOOLEAN
@@ -734,12 +734,22 @@ feature
 		from i := 0
 		until i > medias.count-1
 		loop
-			if medias.item(i).get_titre.as_lower.has_substring(titre.as_lower) and medias.item(i).get_nombre > 0  then
-				io.put_integer(j+1)
-				io.put_string(" : " + medias.item(i).afficher)
-				tab.add_last(i)
-				io.put_new_line
-				j := j + 1
+			if medias.item(i).get_titre.as_lower.has_substring(titre.as_lower)  then
+				if flag then
+					if medias.item(i).get_nombre > 0 then
+						io.put_integer(j+1)
+						io.put_string(" : " + medias.item(i).afficher)
+						tab.add_last(i)
+						io.put_new_line
+						j := j + 1
+					end
+				else
+					io.put_integer(j+1)
+					io.put_string(" : " + medias.item(i).afficher)
+					tab.add_last(i)
+					io.put_new_line
+					j := j + 1
+				end
 			end
 			i := i+1
 		end
@@ -781,7 +791,10 @@ feature
 			i := i+1
 		end
 	end
-	
+
+---------------------------------
+--- RECUPERATION LISTE EMPRUNT
+---------------------------------		
 	liste_emprunt is
 	local
 		i : INTEGER
@@ -801,7 +814,9 @@ feature
 		end
 	end
 	
-	
+---------------------------------
+--- GET LISTE EMPRUNT
+---------------------------------		
 	get_liste_emprunt(identifiant : STRING) : INTEGER is
 	local
 		i , j: INTEGER
@@ -891,7 +906,7 @@ feature
 				res >= 0
 			loop
 				titre := interface.choix_commande("%N Titre du media à rechercher : ")
-				res := rechercher_media_titre(titre)
+				res := rechercher_media_titre(titre, False)
 				if res = -1 then
 					io.put_string("Aucun media correspondant")
 				end
@@ -915,9 +930,9 @@ feature
 		if emprunts.count-1 >= 0 then
 			from i:= 0
 			until
-				emprunts.count-1 >= 0
+				i > emprunts.count-1
 			loop
-				if emprunts.item(i).get_identifiant.is_equal(identifiant) and emprunts.item(i).get_date_retour = 99999999 then
+				if emprunts.item(i).get_id_media.is_equal(identifiant) and emprunts.item(i).get_date_retour = 99999999 then
 					res := True
 				end
 				i := i+1
@@ -929,7 +944,7 @@ feature
 ---------------------------------
 --- SUPPRIMER MEDIA
 ---------------------------------	
-	supprimer_media : BOOLEAN is
+	modifier_media : BOOLEAN is
 	local
 		bol : BOOLEAN
 		res : INTEGER
@@ -943,7 +958,7 @@ feature
 				res >= 0
 			loop		
 				titre := interface.choix_commande("%N Titre du media à rechercher : ")
-				res := rechercher_media_titre(titre)
+				res := rechercher_media_titre(titre,False)
 				if res = -1 then
 					io.put_string("Aucun media correspondant")
 				else
@@ -958,6 +973,71 @@ feature
 		end
 		Result := bol		
 	end
+
+---------------------------------
+--- retourne vrai si un utilisateur a des emprunts en cours
+---------------------------------		
+	a_des_emprunts(identifiant : STRING): BOOLEAN is
+	local
+		res : BOOLEAN
+		i : INTEGER
+	do
+		res := False
+		if emprunts.count-1 >= 0 then
+			from i:= 0
+			until
+				i > emprunts.count-1
+			loop
+				if emprunts.item(i).get_identifiant.is_equal(identifiant) and emprunts.item(i).get_date_retour = 99999999 then
+					res := True
+				end
+				i := i+1
+			end
+		end			
+		Result := res
+	end
+
+---------------------------------
+--- SUPPRIMER UTILISATEUR
+---------------------------------	
+	supprimer_utilisateur : BOOLEAN is
+	local
+		identifiant : STRING
+		res : INTEGER
+		bol : BOOLEAN
+		i : INTEGER
+	do
+		bol := False
+		res := -1
+		if utilisateurs.count-1 >= 0 then
+			from
+			until
+				res >= 0
+			loop		
+				identifiant := interface.choix_commande("%N  du media à rechercher : ")
+				from i := 0
+				until
+					i > utilisateurs.count-1
+				loop
+					if utilisateurs.item(i).get_identifiant.is_equal(identifiant) then
+						if a_des_emprunts(identifiant) then
+							io.put_string("Suppression impossible l'utilisateur à des emprunts en cours.")
+						else
+							io.put_string("Utilisateur supprimé")
+							bol := True
+							res := 0
+						end
+					end
+					i := i + 1 
+				end				
+			end
+		else
+			io.put_string("Liste des utilisateurs vide.%N")
+		end
+		Result := bol		
+	end
+
+
 	
 ---------------------------------
 --- Fonctions utiles
