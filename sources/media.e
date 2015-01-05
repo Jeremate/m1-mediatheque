@@ -28,6 +28,11 @@ feature {ANY}
 	   nombre_exemplaire := nombre_exemplaire + valeur
 	end
 
+	supprimer is
+	do
+		nombre_exemplaire := 0
+		nombre := 0
+	end
 	
 ---------------------
 --- GETTERS
@@ -36,6 +41,11 @@ feature {ANY}
 	get_titre : STRING is
 	do
 		Result := titre
+	end
+	
+	get_nombre : INTEGER is
+	do
+		Result := nombre
 	end
 ---------------------
 --EMPRUNT / RENDU

@@ -15,7 +15,7 @@ feature
 	
 	make is
 		local
-			stop, retour,admin , user ,test: BOOLEAN
+			stop, retour,admin , user ,test, test_suppression: BOOLEAN
 			command : STRING
 			utilisateur : UTILISATEUR
 			livre : LIVRE
@@ -38,8 +38,8 @@ feature
 			create filename_medias.make_from_string("../ressources/medias.txt")
 			create interface.make
 			interface.accueil
-			lire_fichier_utilisateurs
-			lire_fichier_medias
+			lire_fichier_utilisateurs(False)
+			lire_fichier_medias(False)
 			from 			
 			until
 				stop
@@ -92,7 +92,7 @@ feature
 								when "1" then
 									afficher_utilisateurs
 								when "2" then
-									lire_fichier_utilisateurs
+									lire_fichier_utilisateurs(True)
 								when "3" then
 									-- contrôle de saisie du nom
 									nom := interface.choix_commande("%N  Nom de l'utilisateur : ")
@@ -136,7 +136,7 @@ feature
 											io.put_string("Commande inconnue%N")
 										end
 									end
-									ajouter_utilisateur(utilisateur)
+									ajouter_utilisateur(utilisateur,True)
 								when "4" then
 									io.put_string("%N En cours de développement%N")
 								else
@@ -161,7 +161,7 @@ feature
 								when "1" then
 									afficher_medias
 								when "2" then
-									lire_fichier_medias
+									lire_fichier_medias(True)
 								when "3" then
 									from
 									until
@@ -222,7 +222,7 @@ feature
 											end
 											annee := annee_dvd.to_integer
 											create dvd.make_dvd(titre,annee, liste_realisateur,liste_acteur,type,nombre_dvd)
-											ajouter_dvd(dvd)
+											ajouter_dvd(dvd, True)
 										when "2" then
 											titre := interface.choix_commande("%N Titre du livre : ")
 											auteur := interface.choix_commande("%N Auteur du livre : ")
@@ -235,7 +235,7 @@ feature
 											end
 											nombre_livre := nbr_str_livre.to_integer
 											create livre.make_livre(titre,auteur,nombre_livre)
-											ajouter_livre(livre)
+											ajouter_livre(livre,True)
 										else
 											io.put_string("Commande inconnue%N")
 										end
@@ -245,7 +245,10 @@ feature
 									end
 									retour := False
 								when "4" then 
-									test := supprimer_media
+									test_suppression := supprimer_media
+									if test_suppression = True then
+										io.put_string("Média supprimé.%N")
+									end
 								when "5" then
 									if medias.count-1 > 0 then
 										res := 0
@@ -343,7 +346,7 @@ feature
 ---------------------------------
 --- LECTURE FICHIER UTILISATEURS
 ---------------------------------		
-	lire_fichier_utilisateurs is
+	lire_fichier_utilisateurs(flag : BOOLEAN) is
 		local
 			filereader: TEXT_FILE_READ
 			i ,fin,debut, nb_occurence: INTEGER
@@ -404,7 +407,7 @@ feature
 					else
 						create user.make_client(nom, prenom, identifiant)
 					end
-					ajouter_utilisateur(user)
+					ajouter_utilisateur(user,flag)
 				end
 			end	
 			filereader.disconnect
@@ -413,7 +416,7 @@ feature
 ---------------------------------
 --- LECTURE FICHIER MEDIA
 ---------------------------------	
-	lire_fichier_medias is
+	lire_fichier_medias(flag : BOOLEAN) is
 	local
 		filereader: TEXT_FILE_READ
 		i,nombre, annee, var_dvd, var_livre : INTEGER
@@ -490,7 +493,7 @@ feature
 			if ( var_dvd = 1) then
 				var_dvd := 0
 				create dvd.make_dvd(titre,annee,liste_realisateur,liste_acteur,type,nombre)
-				ajouter_dvd(dvd)
+				ajouter_dvd(dvd, flag)
 				titre := ""
 				annee :=0
 				type := ""
@@ -499,7 +502,7 @@ feature
 			if ( var_livre = 1 ) then
 				var_livre := 0
 				create livre.make_livre(titre,auteur,nombre)
-				ajouter_livre(livre)
+				ajouter_livre(livre,flag)
 				auteur := ""
 			end
 		end
@@ -509,34 +512,42 @@ feature
 ---------------------------------
 --- AJOUTER UN DVD
 ---------------------------------		
-	ajouter_dvd(dvd : DVD) is
+	ajouter_dvd(dvd : DVD; flag : BOOLEAN) is
 	local
 		indice : INTEGER
 	do
 		indice := verification_dvd(dvd)
 		if (indice = -1) then
 			medias.add_last(dvd)
-			io.put_string(" Dvd créé.%N")
+			if flag then
+				io.put_string(" Dvd créé.%N")
+			end
 		else
 			medias.item(indice).set_nombre(dvd.nombre)
-			io.put_string(" Dvd existant. Augmentation du nombre disponible.%N")
+			if flag then
+				io.put_string(" Dvd existant. Augmentation du nombre disponible.%N")
+			end
 		end
 	end	
 
 ---------------------------------
 --- AJOUTER UN LIVRE
 ---------------------------------		
-	ajouter_livre(livre : LIVRE) is
+	ajouter_livre(livre : LIVRE ; flag : BOOLEAN) is
 	local
 		indice : INTEGER
 	do
 		indice := verification_livre(livre)
 		if (indice = -1) then
 			medias.add_last(livre)
-			io.put_string(" Livre créé.%N")
+			if flag then
+				io.put_string(" Livre créé.%N")
+			end
 		else
 			medias.item(indice).set_nombre(livre.nombre)
-			io.put_string(" Livre existant. Augmentation du nombre disponible.%N")
+			if flag then
+				io.put_string(" Livre existant. Augmentation du nombre disponible.%N")
+			end
 		end
 	end	
 
@@ -544,13 +555,17 @@ feature
 ---------------------------------
 --- AJOUTER UN UTILISATEUR
 ---------------------------------		
-	ajouter_utilisateur(utilisateur : UTILISATEUR) is
+	ajouter_utilisateur(utilisateur : UTILISATEUR ; flag : BOOLEAN) is
 	do
 		if not (verification_utilisateur(utilisateur)) then
 			utilisateurs.add_last(utilisateur)
-			io.put_string("Utilisateur ajouté.%N")
+			if flag then
+				io.put_string("Utilisateur ajouté.%N")
+			end
 		else
-			io.put_string(" Utilisateur existant.%N")
+			if flag then
+				io.put_string(" Utilisateur existant.%N")
+			end
 		end
 	end	
 
@@ -719,7 +734,7 @@ feature
 		from i := 0
 		until i > medias.count-1
 		loop
-			if medias.item(i).get_titre.as_lower.has_substring(titre.as_lower) then
+			if medias.item(i).get_titre.as_lower.has_substring(titre.as_lower) and medias.item(i).get_nombre > 0  then
 				io.put_integer(j+1)
 				io.put_string(" : " + medias.item(i).afficher)
 				tab.add_last(i)
@@ -894,6 +909,7 @@ feature
 	est_emprunter(identifiant : STRING): BOOLEAN is
 	local
 		res : BOOLEAN
+		i : INTEGER
 	do
 		res := False
 		if emprunts.count-1 >= 0 then
@@ -904,9 +920,8 @@ feature
 				if emprunts.item(i).get_identifiant.is_equal(identifiant) and emprunts.item(i).get_date_retour = 99999999 then
 					res := True
 				end
+				i := i+1
 			end
-		else
-			io.put_string("Liste des médias vide.%N")
 		end			
 		Result := res
 	end
@@ -920,23 +935,26 @@ feature
 		res : INTEGER
 		titre : STRING
 	do
-		res := 1
+		res := -1
 		bol := False
 		if medias.count-1 >= 0 then
 			from
 			until
-				res > 0
-			loop
-			
+				res >= 0
+			loop		
 				titre := interface.choix_commande("%N Titre du media à rechercher : ")
 				res := rechercher_media_titre(titre)
 				if res = -1 then
 					io.put_string("Aucun media correspondant")
 				else
-					medias.item(res).set_nombre(0)
-					bol := True
+					if not (est_emprunter(medias.item(res).get_identifiant)) then
+						medias.item(res).supprimer
+						bol := True
+					end
 				end
 			end
+		else
+			io.put_string("Liste des médias vide.%N")
 		end
 		Result := bol		
 	end
