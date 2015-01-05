@@ -5,6 +5,7 @@ creation {ANY}
 
 feature {ANY}
 	nom, prenom, identifiant: STRING
+	actif :  BOOLEAN
 
 feature {ANY}
 	admin: BOOLEAN
@@ -22,6 +23,7 @@ feature {ANY}
 		prenom := prenom_c
 		identifiant := identifiant_c
 		admin := False
+		actif := True
 	end
 		
 	make_admin (nom_a, prenom_a, identifiant_a: STRING) is
@@ -30,6 +32,7 @@ feature {ANY}
 		prenom := prenom_a
 		identifiant := identifiant_a
 		admin := True
+		actif := True
 	end
 	
 	est_admin: BOOLEAN is
@@ -49,6 +52,21 @@ feature {ANY}
 		Result := identifiant + " : " + nom + " " + prenom + " - " + estadm +"%N"
 	end
 
+	est_actif: BOOLEAN is
+	do
+		Result := actif
+	end
+	
+	active is
+	do
+		actif := True
+	end
+	
+	
+	desactive is
+	do
+		actif := False
+	end
 	
 	str_user(valeur : STRING) : BOOLEAN is
 	do

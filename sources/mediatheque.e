@@ -57,9 +57,9 @@ feature
 				from i:= 0
 				until i > utilisateurs.count-1
 				loop
-					if utilisateurs.item(i).str_admin(command) then
+					if utilisateurs.item(i).str_admin(command) and utilisateurs.item(i).est_actif then
 						admin := True
-					elseif utilisateurs.item(i).str_user(command) then
+					elseif utilisateurs.item(i).str_user(command) and utilisateurs.item(i).est_actif then
 						user := True
 						id_user_emprunt := command
 					end	
@@ -565,8 +565,15 @@ feature
 				io.put_string("Utilisateur ajouté.%N")
 			end
 		else
-			if flag then
-				io.put_string(" Utilisateur existant.%N")
+			if utilisateur.est_actif then
+				if flag then
+					io.put_string(" Utilisateur existant.%N")
+				end
+			else
+				utilisateur.active
+				if flag then
+					io.put_string(" Réactivation utilisateur.%N")
+				end
 			end
 		end
 	end	
@@ -657,17 +664,21 @@ feature
 ---------------------------------		
 	afficher_utilisateurs is
 	local 
-		i : INTEGER
+		i,j : INTEGER
 	do
+		j := 0
 		if utilisateurs.count -1 >= 0 then
 			io.put_new_line
 			from i := 0
 			until i > utilisateurs.count-1
 			loop
-				io.put_integer(i+1)
-				io.put_string(":"+utilisateurs.item(i).afficher)
+				if utilisateurs.item(i).est_actif then
+					io.put_integer(j+1)
+					io.put_string(":"+utilisateurs.item(i).afficher)
+					io.put_new_line
+					j := j + 1 
+				end
 				i := i+1
-				io.put_new_line
 			end
 			io.put_new_line
 		else
@@ -1026,7 +1037,7 @@ feature
 						if a_des_emprunts(identifiant) then
 							io.put_string("Suppression impossible l'utilisateur à des emprunts en cours.")
 						else
-							utilisateurs.remove(i)
+							utilisateurs.item(i).desactive
 							io.put_string("Utilisateur supprimé")
 							bol := True
 						end
@@ -1034,7 +1045,7 @@ feature
 					i := i + 1 
 				end
 				if res = -1 then
-					res = 1
+					res := 1
 					io.put_string("Identifiant inconnu")
 				end
 			end
