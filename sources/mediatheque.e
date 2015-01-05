@@ -39,6 +39,7 @@ feature
 			create interface.make
 			interface.accueil
 			lire_fichier_utilisateurs
+			lire_fichier_medias
 			from 			
 			until
 				stop
@@ -244,7 +245,7 @@ feature
 									end
 									retour := False
 								when "4" then 
-									io.put_string("%N En cours de développement%N")
+									test := supprimer_media
 								when "5" then
 									if medias.count-1 > 0 then
 										res := 0
@@ -254,7 +255,7 @@ feature
 										loop
 											titre := interface.choix_commande("%N Titre du media à rechercher : ")
 											res := rechercher_media_titre(titre)
-											if res = 0 then
+											if res = -1 then
 												io.put_string("Aucun media correspondant")
 											end
 										end
@@ -830,7 +831,11 @@ feature
 			Result := tab.item(command.to_integer - 1)
 		end
 	end
-	
+
+
+---------------------------------
+--- RECHERCHER EMPRUNT POUR UN UTILISATEUR
+---------------------------------	
 	rechercher_emprunt(identifiant : STRING) : INTEGER is
 	local
 		res : INTEGER
@@ -853,7 +858,12 @@ feature
 		end
 		Result := res
 	end
-	
+
+
+
+---------------------------------
+--- RECHERCHER MEDIA
+---------------------------------	
 	rechercher_media : INTEGER is
 	local
 		res : INTEGER
@@ -876,6 +886,59 @@ feature
 			io.put_string("Liste des médias vide.%N")
 		end
 		Result := res
+	end
+
+---------------------------------
+--- retourne vrai si un media est emprunter
+---------------------------------		
+	est_emprunter(identifiant : STRING): BOOLEAN is
+	local
+		res : BOOLEAN
+	do
+		res := False
+		if emprunts.count-1 >= 0 then
+			from i:= 0
+			until
+				emprunts.count-1 >= 0
+			loop
+				if emprunts.item(i).get_identifiant.is_equal(identifiant) and emprunts.item(i).get_date_retour = 99999999 then
+					res := True
+				end
+			end
+		else
+			io.put_string("Liste des médias vide.%N")
+		end			
+		Result := res
+	end
+
+---------------------------------
+--- SUPPRIMER MEDIA
+---------------------------------	
+	supprimer_media : BOOLEAN is
+	local
+		bol : BOOLEAN
+		res : INTEGER
+		titre : STRING
+	do
+		res := 1
+		bol := False
+		if medias.count-1 >= 0 then
+			from
+			until
+				res > 0
+			loop
+			
+				titre := interface.choix_commande("%N Titre du media à rechercher : ")
+				res := rechercher_media_titre(titre)
+				if res = -1 then
+					io.put_string("Aucun media correspondant")
+				else
+					medias.item(res).set_nombre(0)
+					bol := True
+				end
+			end
+		end
+		Result := bol		
 	end
 	
 ---------------------------------
