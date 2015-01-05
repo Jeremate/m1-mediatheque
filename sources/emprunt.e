@@ -19,6 +19,11 @@ feature {ANY}
 		dureeAutorisee := 15
 	end
 	
+	get_dureeAutorisee :  INTEGER is
+	do
+		Result := dureeAutorisee
+	end
+	
 	get_identifiant : STRING is
 	do
 		Result := identifiant

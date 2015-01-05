@@ -831,6 +831,30 @@ feature
 	end
 	
 ---------------------------------
+--- RECUPERATION LISTE RETARD
+---------------------------------		
+	consulter_retard is
+	local
+		i : INTEGER
+		date_retour : TIME
+	do
+		if emprunts.count-1 > 0 then
+			from i:=0
+			until
+				i > emprunts.count-1
+			loop
+				date_retour := emprunts.item(i).get_date_retour
+				if emprunts.item(i).get_date_retour > date_retour.add_day(emprunts.item(i).get_dureeAutorisee) then
+					io.put_string( emprunts.item(i).afficher)
+				end
+				i := i + 1
+			end
+		else
+			io.put_string("Liste des emprunts vide.%N")
+		end
+	end	
+	
+---------------------------------
 --- GET LISTE EMPRUNT
 ---------------------------------		
 	get_liste_emprunt(identifiant : STRING) : INTEGER is
