@@ -28,7 +28,9 @@ feature
 			type : STRING
 			emprunt : EMPRUNT
 			id_user_emprunt : STRING
+			t : TIME
 		do
+			io.put_integer(t.hash_code)
 			-- Initialisation
 			create utilisateurs.with_capacity(0,0)
 			create medias.with_capacity(0,0)
@@ -812,15 +814,16 @@ feature
 	local
 		i : INTEGER
 	do
-		if emprunts.count-1 > -1 then
+		if emprunts.count-1 > 0 then
 			from i:=0
 			until
 				i > emprunts.count-1
 			loop
-				if emprunts.item(i).get_date_retour = 99999999 then
+				if emprunts.item(i).get_date_retour.hash_code = 0 then
 					
 					io.put_string( emprunts.item(i).afficher)
 				end
+				i := i + 1
 			end
 		else
 			io.put_string("Liste des emprunts vide.%N")
@@ -844,7 +847,7 @@ feature
 		until i > emprunts.count-1
 		loop
 			res := emprunts.item(i).get_identifiant
-			if res.is_equal(identifiant) and emprunts.item(i).get_date_retour = 99999999 then
+			if res.is_equal(identifiant) and emprunts.item(i).get_date_retour.hash_code = 0 then
 				io.put_integer(j+1)
 				io.put_string(" : " + emprunts.item(i).afficher)
 				tab.add_last(i)
@@ -945,7 +948,7 @@ feature
 			until
 				i > emprunts.count-1
 			loop
-				if emprunts.item(i).get_id_media.is_equal(identifiant) and emprunts.item(i).get_date_retour = 99999999 then
+				if emprunts.item(i).get_id_media.is_equal(identifiant) and emprunts.item(i).get_date_retour.hash_code = 0 then
 					res := True
 				end
 				i := i+1
@@ -1001,7 +1004,7 @@ feature
 			until
 				i > emprunts.count-1
 			loop
-				if emprunts.item(i).get_identifiant.is_equal(identifiant) and emprunts.item(i).get_date_retour = 99999999 then
+				if emprunts.item(i).get_identifiant.is_equal(identifiant) and emprunts.item(i).get_date_retour.hash_code = 0 then
 					res := True
 				end
 				i := i+1
