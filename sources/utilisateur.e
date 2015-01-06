@@ -35,6 +35,15 @@ feature {ANY}
 		actif := actif_a
 	end
 	
+	modifier_statut is
+	do
+		if admin then
+			admin := False
+		else
+			admin := True
+		end
+	end
+	
 	est_admin: BOOLEAN is
 	do
 		Result := admin

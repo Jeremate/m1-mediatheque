@@ -101,6 +101,7 @@ feature {ANY}
 		io.put_string("%N 2 - Rendre un media %N")
 		io.put_string("%N 3 - Consulter les emprunts en cours %N")
 		io.put_string("%N 4 - Consulter les retards %N")
+		io.put_string("%N 5 - Modifier la durée autorisée d'un emprunt %N")
 	end
 	
 	menu_gestion_emprunts_user is
@@ -118,6 +119,7 @@ feature {ANY}
 		io.put_string("%N 2 - Importer les informations du fichier utilisateurs.txt %N")
 		io.put_string("%N 3 - Ajouter un utilisateur %N")
 		io.put_string("%N 4 - Supprimer un utilisateur (par identifiant) %N")
+		io.put_string("%N 5 - Modifier statut d'un utilisateur %N")
 	end
 	
 	menu_choix_media is 

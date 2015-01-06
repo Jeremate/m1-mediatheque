@@ -1,8 +1,9 @@
 Nom<Haddock> ; Prenom<Archibald> ; Identifiant<bachibouzouk> ; Admin<OUI> ; Actif<OUI> 
 Nom<Tournesol> ; Prenom<Tryphon> ; Identifiant<trytour> ; Actif<OUI> 
-Nom<Bolivar> ; Prenom<Anatole> ; Identifiant<anabol> ; Admin<OUI> ; Actif<NON> 
+Nom<Bolivar> ; Prenom<Anatole> ; Identifiant<anabol> ; Actif<NON> 
 Nom<Haddock> ; Prenom<Colin> ; Identifiant<colhad> ; Actif<OUI> 
 Nom<Bocasa> ; Prenom<Tryphon> ; Identifiant<trybo> ; Actif<OUI> 
 Nom<Patacaisse> ; Prenom<Babar> ; Identifiant<babapa> ; Actif<OUI> 
 Nom<Klauer> ; Prenom<Jérémy> ; Identifiant<klauerj> ; Admin<OUI> ; Actif<OUI> 
 Nom<Bocéno> ; Prenom<Paul-Jakez> ; Identifiant<bocenopj> ; Actif<OUI> 
+Nom<test> ; Prenom<test> ; Identifiant<test> ; Admin<OUI> ; Actif<NON> 

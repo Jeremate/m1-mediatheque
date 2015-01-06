@@ -152,6 +152,8 @@ feature
 								when "4" then
 								-- Suppression utilisateur
 									test_suppression := supprimer_utilisateur
+								when "5" then
+									modifier_statut
 								else
 									io.put_string("Commande inconnue%N")
 								end
@@ -321,6 +323,8 @@ feature
 									liste_emprunt
 								when "4" then
 									consulter_retard
+								when "5" then
+									modifier_duree_autorisee
 								else
 									io.put_string("Commande inconnue%N")
 								end
@@ -1351,13 +1355,57 @@ feature
 		Result := bol		
 	end
 
-	modifier_duree_autorisee(duree : INTEGER) is
+	modifier_duree_autorisee is
+	local
+		duree : STRING
+		res : INTEGER
 	do
-		if duree > 0 then
-			prm_duree_autorisee := duree
+		res := -1
+		from
+		until
+			res >= 0
+		loop	
+			duree := interface.choix_commande("%N Nouvelle durée d'emprunt autorisée pour les médias : ")
+			if duree.is_integer then
+				if duree.to_integer > 0 then
+					res := 0
+					prm_duree_autorisee := duree.to_integer
+					io.put_string("Durée modifée.%N")
+				else
+					io.put_string("Durée doit être supérieur à 0.%N")
+				end
+			end
 		end
 	end
-	
+
+	modifier_statut is
+	local
+		i ,res : INTEGER
+		identifiant : STRING
+	do
+		res := -1
+		from
+		until
+			res >= 0
+		loop		
+			identifiant := interface.choix_commande("%N Identifiant de l'utilisateur à modifier : ")
+			from i := 0
+			until
+				i > utilisateurs.count-1
+			loop
+				if utilisateurs.item(i).get_identifiant.is_equal(identifiant) and  utilisateurs.item(i).est_actif then
+					res := 0
+					utilisateurs.item(i).modifier_statut
+					io.put_string("Statut modifier.%N")
+				end
+				i := i + 1 
+			end
+			if res = -1 then
+				res := 1
+				io.put_string("Identifiant inconnu.%N")
+			end
+		end
+	end
 ---------------------------------
 --- Fonctions utiles
 ---------------------------------
