@@ -41,8 +41,15 @@ feature {ANY}
 	end
 	
 	afficher : STRING is
+	local
+		res : STRING
 	do
-		Result := Precursor + ", de : " + annee.to_string +", type :" + type + ", réalisé par :"+ get_string_realisateur + " | DVD"
+		res := ", de : " + annee.to_string 
+		if not type.is_empty then
+			res := res +", type :" + type
+		end
+		res := ", réalisé par :"+ get_string_realisateur + ", acteurs : " + get_string_acteur+ " | DVD"
+		Result := Precursor + res
 	end
 	
 	sauvegarde : STRING is
@@ -81,6 +88,21 @@ feature {ANY}
 		until i > liste_realisateur.count-1
 		loop
 			res := res + " " + liste_realisateur.item(i)
+			i := i + 1
+		end
+		Result := res
+	end
+	
+	get_string_acteur : STRING is
+	local
+		i : INTEGER
+		res : STRING
+	do
+		res := ""
+		from i:=0
+		until i > liste_acteur.count-1
+		loop
+			res := res + " " + liste_acteur.item(i)
 			i := i + 1
 		end
 		Result := res

@@ -53,6 +53,11 @@ feature {ANY}
 	do
 		Result := nombre_exemplaire
 	end
+	
+	get_nombre : INTEGER is
+	do
+		Result := nombre
+	end
 ---------------------
 --EMPRUNT / RENDU
 ---------------------

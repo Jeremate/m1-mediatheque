@@ -123,7 +123,7 @@ feature
 									loop
 										if identifiant_existe(identifiant) and  not est_actif(identifiant) then
 											user_actif.active
-											io.put_string("Compte réactivé.")
+											io.put_string("%NCompte réactivé.%N")
 											fin := True
 										else
 											io.put_string("%N Cet identifiant existe déjà.")
@@ -266,18 +266,17 @@ feature
 									end
 								when "5" then
 									if medias.count-1 > 0 then
-										res := 0
+										res := -1
 										from
 										until 
-											res >= 0
+											res > 0
 										loop
 											titre := interface.choix_commande("%N Titre du media à rechercher : ")
-											res := rechercher_media_titre(titre,False)
+											res := rechercher_media_titre(titre,True)
 											if res = -1 then
 												io.put_string("Aucun media correspondant.%N")
 											end
 										end
-										io.put_new_line
 									else
 										io.put_string("Liste des médias vide.%N")
 									end
@@ -362,12 +361,28 @@ feature
 								retour_media(emprunts.item(nbr_emprunt).get_id_media)
 							end
 							interface.continuer
+						when "3" then
+							if medias.count-1 > 0 then
+								res := -1
+								from
+								until 
+									res >= 0
+								loop
+									titre := interface.choix_commande("%N Titre du media à rechercher : ")
+									res := rechercher_media_titre(titre,True)
+									if res = -1 then
+										io.put_string("Aucun media correspondant.%N")
+									end
+								end
+							else
+								io.put_string("Liste des médias vide.%N")
+							end
 						else
 							io.put_string("Commande inconnue%N")
 						end
 					end
 				else
-					io.put_string("%N Identifiant inconnu%N")
+					io.put_string("%N Identifiant inconnu.%N")
 				end				
 			end
 			sauvegarde
@@ -998,7 +1013,7 @@ feature
 		loop
 			if medias.item(i).get_titre.as_lower.has_substring(titre.as_lower)  then
 				if flag then
-					if medias.item(i).get_nombre_exemplaire > 0 then
+					if medias.item(i).get_nombre_exemplaire > 0 and medias.item(i).get_nombre > 0  then
 						io.put_integer(j+1)
 						io.put_string(" : " + medias.item(i).afficher)
 						tab.add_last(i)
@@ -1196,12 +1211,12 @@ feature
 				res >= 0
 			loop
 				titre := interface.choix_commande("%N Titre du media à rechercher : ")
-				res := rechercher_media_titre(titre, False)
+				res := rechercher_media_titre(titre, True)
 				if res = -1 then
 					io.put_string("Aucun media correspondant")
 				end
+				io.put_new_line
 			end
-			io.put_new_line
 		else
 			io.put_string("Liste des médias vide.%N")
 		end
@@ -1312,18 +1327,22 @@ feature
 					if utilisateurs.item(i).get_identifiant.is_equal(identifiant) then
 						res := 0
 						if a_des_emprunts(identifiant) then
-							io.put_string("Suppression impossible l'utilisateur à des emprunts en cours.%N")
+							io.put_string("%N Suppression impossible l'utilisateur à des emprunts en cours.%N")
 						else
-							utilisateurs.item(i).desactive
-							io.put_string("Utilisateur supprimé. %N")
-							bol := True
+							if utilisateurs.item(i).est_actif then
+								utilisateurs.item(i).desactive
+								io.put_string("%N Utilisateur supprimé. %N")
+								bol := True
+							else
+								io.put_string("%N Utilisateur déja désactivé. %N")
+							end
 						end
 					end
 					i := i + 1 
 				end
 				if res = -1 then
 					res := 1
-					io.put_string("Identifiant inconnu")
+					io.put_string("Identifiant inconnu.%N")
 				end
 			end
 		else
