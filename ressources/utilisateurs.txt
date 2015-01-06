@@ -1,4 +1,3 @@
-Nom<Delahaye> ; Prenom<Benoit> ; Identifiant<bdelahay> ; Actif<OUI> 
 Nom<Haddock> ; Prenom<Archibald> ; Identifiant<bachibouzouk> ; Admin<OUI> ; Actif<OUI> 
 Nom<Tournesol> ; Prenom<Tryphon> ; Identifiant<trytour> ; Actif<OUI> 
 Nom<Bolivar> ; Prenom<Anatole> ; Identifiant<anabol> ; Admin<OUI> ; Actif<NON> 
