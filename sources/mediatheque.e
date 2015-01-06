@@ -139,9 +139,9 @@ feature
 										inspect 
 											new_admin
 										when "1" then
-											create utilisateur.make_admin(nom,prenom,identifiant)
+											create utilisateur.make_admin(nom,prenom,identifiant,True)
 										when "0" then
-											create utilisateur.make_client(nom,prenom,identifiant)
+											create utilisateur.make_client(nom,prenom,identifiant,True)
 										else
 											io.put_string("Commande inconnue%N")
 										end
@@ -369,8 +369,9 @@ feature
 		file_name_emprunts : STRING
 		i : INTEGER
 	do
-		file_name_medias := "medias.txt"
-		file_name_utilisateurs := "../ressources/utilisateursbis.txt"
+		file_name_medias := "../ressources/medias.txt"
+		file_name_utilisateurs := "../ressources/utilisateurs.txt"
+		-- sauvegarde utilisateurs
 		create file.connect_to(file_name_utilisateurs)
 		if file.is_connected then
 			from i := 0
@@ -381,7 +382,33 @@ feature
 			end
 			file.disconnect
 		else
-			io.put_string("Echec sauvegarde.%N")
+			io.put_string("Echec sauvegarde utilisateurs.%N")
+		end
+		-- sauvegarde medias
+		create file.connect_to(file_name_medias)
+		if file.is_connected then
+			from i := 0
+			until i > medias.count - 1
+			loop
+				file.put_line(medias.item(i).sauvegarde)
+				i := i + 1
+			end
+			file.disconnect
+		else
+			io.put_string("Echec sauvegarde medias.%N")
+		end
+		-- sauvegarde emprunts
+		create file.connect_to(file_name_emprunts)
+		if file.is_connected then
+			from i := 0
+			until i > emprunts.count - 1
+			loop
+				file.put_line(emprunts.item(i).sauvegarde)
+				i := i + 1
+			end
+			file.disconnect
+		else
+			io.put_string("Echec sauvegarde emprunts.%N")
 		end
 	end
 		
@@ -393,8 +420,8 @@ feature
 			filereader: TEXT_FILE_READ
 			i ,fin,debut, nb_occurence: INTEGER
 			valeur: STRING
-			nom, prenom, buffer ,identifiant, str_admin: STRING
-			admin: BOOLEAN
+			nom, prenom, buffer ,identifiant, str_admin , str_actif: STRING
+			admin , actif: BOOLEAN
 			user: UTILISATEUR
 		do
 			create filereader.connect_to(filename_utilisateurs)			
@@ -415,6 +442,7 @@ feature
 					loop
 						i := i+1
 						fin := buffer.index_of(';',debut)
+						actif := True
 						if (fin = 0) then
 							fin := buffer.count
 						end
@@ -442,12 +470,30 @@ feature
 								admin := False
 							end
 							debut := fin + 1
+						end
+						if (buffer.substring(debut,fin).has_substring("Actif")) then
+							valeur := buffer.substring(debut,fin)
+							str_actif := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
+							if (str_actif.same_as("oui")) then
+								actif := True
+							else
+								actif := False
+							end
+							debut := fin + 1
 						end	
 					end
 					if (admin) then
-						create user.make_admin(nom, prenom, identifiant)
+						if actif then
+							create user.make_admin(nom, prenom, identifiant, True)
+						else
+							create user.make_admin(nom, prenom, identifiant, False)
+						end
 					else
-						create user.make_client(nom, prenom, identifiant)
+						if actif then
+							create user.make_client(nom, prenom, identifiant, True)
+						else
+							create user.make_client(nom, prenom, identifiant, False)
+						end
 					end
 					ajouter_utilisateur(user,flag)
 				end
@@ -731,16 +777,20 @@ feature
 ---------------------------------		
 	afficher_medias is
 	local 
-		i : INTEGER
+		i , j : INTEGER
 	do
 		if medias.count -1 >= 0 then
 			io.put_new_line
 			io.put_string("Affichage des médias %N")
+			j := 0
 			from i := 0
 			until i > medias.count-1
 			loop
-				io.put_integer(i+1)
-				io.put_string(":"+medias.item(i).afficher)
+				if medias.item(j).get_nombre_exemplaire > 0 then
+					io.put_integer(j+1)
+					io.put_string(":"+medias.item(i).afficher)
+					j := j + 1
+				end
 				i := i+1
 				io.put_new_line
 			end
@@ -809,7 +859,7 @@ feature
 		loop
 			if medias.item(i).get_titre.as_lower.has_substring(titre.as_lower)  then
 				if flag then
-					if medias.item(i).get_nombre > 0 then
+					if medias.item(i).get_nombre_exemplaire > 0 then
 						io.put_integer(j+1)
 						io.put_string(" : " + medias.item(i).afficher)
 						tab.add_last(i)

@@ -43,6 +43,27 @@ feature {ANY}
 	do
 		Result := Precursor + ", de : " + annee.to_string +", type :" + type + ", réalisé par :"+ get_string_realisateur + " | DVD"
 	end
+	
+	sauvegarde : STRING is
+	local 
+		res : STRING
+		i : INTEGER
+	do
+		res := " ; Annee<" + annee.to_string +"> Type<" + type + "> ; DVD "
+		from i:=0
+		until i > liste_realisateur.count-1
+		loop
+			res := res + " ; Realisateur<" + liste_realisateur.item(i)+"> "
+			i := i + 1
+		end
+		from i:=0
+		until i > liste_acteur.count-1
+		loop
+			res := res + " ; Acteur<" + liste_acteur.item(i)+"> "
+			i := i + 1
+		end
+		Result := Precursor + res
+	end
 
 	compare(dvd : DVD) : BOOLEAN is
 	do

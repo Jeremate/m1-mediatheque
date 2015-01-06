@@ -17,22 +17,22 @@ feature {ANY}
 		Result := (nom.is_equal(utilisateur.nom) and prenom.is_equal(utilisateur.prenom) and identifiant.is_equal(utilisateur.identifiant))
 	end
 	
-	make_client (nom_c, prenom_c, identifiant_c: STRING) is
+	make_client (nom_c, prenom_c, identifiant_c: STRING ; actif_c : BOOLEAN) is
 	do
 		nom := nom_c
 		prenom := prenom_c
 		identifiant := identifiant_c
 		admin := False
-		actif := True
+		actif := actif_c
 	end
 		
-	make_admin (nom_a, prenom_a, identifiant_a: STRING) is
+	make_admin (nom_a, prenom_a, identifiant_a: STRING ; actif_a : BOOLEAN) is
 	do
 		nom := nom_a
 		prenom := prenom_a
 		identifiant := identifiant_a
 		admin := True
-		actif := True
+		actif := actif_a
 	end
 	
 	est_admin: BOOLEAN is
@@ -67,11 +67,13 @@ feature {ANY}
 		res : STRING
 	do
 		res := "Nom<"+nom+"> ; Prenom<"+prenom+"> ; Identifiant<"+identifiant+"> "
-		if admin = True
+		if admin = True then
 			res := res + "; Admin<OUI> "
 		end
 		if actif then
 			res := res + "; Actif<OUI> "
+		else
+			res := res + "; Actif<NON> "
 		end
 		Result := res
 	end

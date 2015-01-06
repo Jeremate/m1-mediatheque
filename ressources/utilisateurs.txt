@@ -1,9 +1,9 @@
-Nom<Delahaye> ; Prenom<Benoit> ; Identifiant<bdelahay>
-Nom<Haddock> ; Prenom<Archibald> ; Identifiant<bachibouzouk> ; Admin<OUI>
-Nom<Tournesol> ; Prenom<Tryphon> ; Identifiant<trytour>
-Nom<Bolivar> ; Prenom<Anatole> ; Identifiant<anabol> ; Admin<OUI>
-Nom<Haddock> ; Prenom<Colin> ; Identifiant<colhad>
-Nom<Bocasa> ; Prenom<Tryphon> ; Identifiant<trybo>
-Nom<Patacaisse> ; Prenom<Babar> ; Identifiant<babapa>
-Nom<Klauer>;Prenom<Jérémy>;Identifiant<klauerj>;Admin<Oui>
-Nom<Bocéno>; Prenom<Paul-Jakez>; Identifiant<bocenopj>
+Nom<Delahaye> ; Prenom<Benoit> ; Identifiant<bdelahay> ; Actif<OUI> 
+Nom<Haddock> ; Prenom<Archibald> ; Identifiant<bachibouzouk> ; Admin<OUI> ; Actif<OUI> 
+Nom<Tournesol> ; Prenom<Tryphon> ; Identifiant<trytour> ; Actif<OUI> 
+Nom<Bolivar> ; Prenom<Anatole> ; Identifiant<anabol> ; Admin<OUI> ; Actif<NON> 
+Nom<Haddock> ; Prenom<Colin> ; Identifiant<colhad> ; Actif<OUI> 
+Nom<Bocasa> ; Prenom<Tryphon> ; Identifiant<trybo> ; Actif<OUI> 
+Nom<Patacaisse> ; Prenom<Babar> ; Identifiant<babapa> ; Actif<OUI> 
+Nom<Klauer> ; Prenom<Jérémy> ; Identifiant<klauerj> ; Admin<OUI> ; Actif<OUI> 
+Nom<Bocéno> ; Prenom<Paul-Jakez> ; Identifiant<bocenopj> ; Actif<OUI> 

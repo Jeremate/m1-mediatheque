@@ -23,6 +23,11 @@ feature {ANY}
 		Result := Precursor + ", écrit par " + auteur + " | LIVRE"
 	end
 
+	sauvegarde  : STRING is
+	do
+		Result := Precursor + " ; Auteur<" + auteur + "> ; Livre "
+	end
+	
 	compare(livre : LIVRE) : BOOLEAN is
 	do
 		Result := (titre.is_equal(livre.titre) and auteur.is_equal(livre.auteur))

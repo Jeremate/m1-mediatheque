@@ -19,6 +19,12 @@ feature {ANY}
 		Result := " " + titre + ", nombre disponible :"+ nombre.to_string
 	end
 	
+	
+	sauvegarde : STRING is
+	do
+		Result := "Titre<"+titre +"> ; Nombre<"+nombre.to_string+"> "
+	end
+	
 ---------------------
 --- SETTERS
 ---------------------
@@ -43,9 +49,9 @@ feature {ANY}
 		Result := titre
 	end
 	
-	get_nombre : INTEGER is
+	get_nombre_exemplaire : INTEGER is
 	do
-		Result := nombre
+		Result := nombre_exemplaire
 	end
 ---------------------
 --EMPRUNT / RENDU

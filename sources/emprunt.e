@@ -24,6 +24,12 @@ feature {ANY}
 		Result := duree_autorisee
 	end
 	
+	sauvegarde : STRING is
+	do
+		Result := "id_media<"+id_media+"> ; identifiant<"+identifiant+" ; 
+	end
+	
+	
 	get_identifiant : STRING is
 	do
 		Result := identifiant
