@@ -37,7 +37,7 @@ feature {ANY}
 	
 	get_identifiant : STRING is
 	do
-		Result := titre +" "+ auteur
+		Result := titre +" de "+ auteur
 	end
 	
 -----------------------------

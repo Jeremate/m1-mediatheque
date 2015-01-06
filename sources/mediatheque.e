@@ -310,7 +310,6 @@ feature
 											emprunts.add_last(emprunt)
 										end
 										io.put_new_line
-										interface.continuer
 									end
 								when "2" then
 									nbr_emprunt := rechercher_emprunt(id_user_emprunt)
@@ -318,7 +317,6 @@ feature
 										emprunts.item(nbr_emprunt).set_date_retour
 										retour_media(emprunts.item(nbr_emprunt).get_id_media)
 									end
-									interface.continuer
 								when "3" then
 									liste_emprunt
 								when "4" then
@@ -1088,6 +1086,7 @@ feature
 				if emprunts.item(i).get_date_retour.hash_code = 0 then
 					
 					io.put_string( emprunts.item(i).afficher)
+					io.put_new_line
 				end
 				i := i + 1
 			end
@@ -1187,7 +1186,7 @@ feature
 			loop
 				res := get_liste_emprunt(identifiant)
 				if res = -1 then
-					io.put_string("Aucun emprunt pour c'est identifiant")
+					io.put_string("Aucun emprunt pour cet identifiant.")
 					Result := res
 				end
 			end
@@ -1209,15 +1208,18 @@ feature
 		titre : STRING
 	do
 		res := -1
+		titre := ""
 		if medias.count-1 >= 0 then
 			from
 			until 
-				res >= 0
+				res >= 0 or titre.is_equal("0")
 			loop
 				titre := interface.choix_commande("%N Titre du media à rechercher : ")
-				res := rechercher_media_titre(titre, True)
+				if not titre.is_equal("0") then
+					res := rechercher_media_titre(titre, True)
+				end
 				if res = -1 then
-					io.put_string("Aucun media correspondant")
+					io.put_string("Aucun media correspondant. 0 pour annuler la recherche")
 				end
 				io.put_new_line
 			end
@@ -1331,7 +1333,7 @@ feature
 					if utilisateurs.item(i).get_identifiant.is_equal(identifiant) then
 						res := 0
 						if a_des_emprunts(identifiant) then
-							io.put_string("%N Suppression impossible l'utilisateur à des emprunts en cours.%N")
+							io.put_string("%N Suppression impossible car l'utilisateur a des emprunts en cours.%N")
 						else
 							if utilisateurs.item(i).est_actif then
 								utilisateurs.item(i).desactive

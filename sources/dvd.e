@@ -102,7 +102,7 @@ feature {ANY}
 		from i:=0
 		until i > liste_acteur.count-1
 		loop
-			res := res + " " + liste_acteur.item(i)
+			res := res + " ; " + liste_acteur.item(i)
 			i := i + 1
 		end
 		Result := res
@@ -110,7 +110,7 @@ feature {ANY}
 	
 	get_identifiant : STRING is
 	do
-		Result := titre +" " + get_string_realisateur
+		Result := titre +" de " + get_string_realisateur
 	end
 	
 	
