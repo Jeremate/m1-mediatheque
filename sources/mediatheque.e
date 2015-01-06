@@ -10,14 +10,15 @@ feature {ANY}
 	filename_medias: STRING --chemin vers le fichier medias
 	interface : INTERFACE
 	emprunts : ARRAY[EMPRUNT]
+	prm_duree_autorisee : INTEGER
 	
 feature
 	
 	make is
 		local
-			stop, retour,admin , user ,test, test_suppression: BOOLEAN
+			stop, retour,admin , user ,test, test_suppression, fin: BOOLEAN
 			command : STRING
-			utilisateur : UTILISATEUR
+			utilisateur ,user_actif : UTILISATEUR
 			livre : LIVRE
 			dvd :  DVD
 			nom, prenom, identifiant, new_admin : STRING
@@ -28,14 +29,12 @@ feature
 			type : STRING
 			emprunt : EMPRUNT
 			id_user_emprunt : STRING
-			t : TIME
 		do
-			io.put_integer(t.hash_code)
 			-- Initialisation
 			create utilisateurs.with_capacity(0,0)
 			create medias.with_capacity(0,0)
 			create emprunts.with_capacity(0,0)
-			
+			prm_duree_autorisee := 15
 			create filename_utilisateurs.make_from_string("../ressources/utilisateurs.txt")
 			create filename_medias.make_from_string("../ressources/medias.txt")
 			create interface.make
@@ -61,9 +60,11 @@ feature
 				loop
 					if utilisateurs.item(i).str_admin(command) and utilisateurs.item(i).est_actif then
 						admin := True
+						user_actif := utilisateurs.item(i)
 					elseif utilisateurs.item(i).str_user(command) and utilisateurs.item(i).est_actif then
 						user := True
 						id_user_emprunt := command
+						user_actif := utilisateurs.item(i)
 					end	
 					i := i+1
 				end
@@ -114,11 +115,19 @@ feature
 									
 									-- contrôle de saisie de l'identifiant
 									identifiant := interface.choix_commande("%N Identifiant de l'utilisateur : ")
+									fin := False
 									from
-									until not identifiant_existe(identifiant) and not est_vide(identifiant)
+									until fin or (not identifiant_existe(identifiant) and not est_vide(identifiant))
 									loop
-										io.put_string("%N Cet identifiant existe déjà.")
-										identifiant := interface.choix_commande("%N Identifiant de l'utilisateur : ")
+										if identifiant_existe(identifiant) and  not est_actif(identifiant) then
+											user_actif.active
+											io.put_string("Compte réactivé.")
+											fin := True
+										else
+											io.put_string("%N Cet identifiant existe déjà.")
+											identifiant := interface.choix_commande("%N Identifiant de l'utilisateur : ")
+										end
+										
 									end
 									new_admin := ""
 									from
@@ -247,11 +256,11 @@ feature
 									end
 									retour := False
 								when "4" then 
-									test_suppression := modifier_media
+									test_suppression := supprimer_media
 									if test_suppression = True then
 										io.put_string("Média supprimé.%N")
 									else
-										io.put_string("Suppresion impossible. Le média est emprunté.")
+										io.put_string("Suppression impossible. Le média est emprunté.%N")
 									end
 								when "5" then
 									if medias.count-1 > 0 then
@@ -263,7 +272,7 @@ feature
 											titre := interface.choix_commande("%N Titre du media à rechercher : ")
 											res := rechercher_media_titre(titre,False)
 											if res = -1 then
-												io.put_string("Aucun media correspondant")
+												io.put_string("Aucun media correspondant.%N")
 											end
 										end
 										io.put_new_line
@@ -323,7 +332,7 @@ feature
 						when "1" then
 							res := rechercher_media
 							if res > -1 then
-								create emprunt.make_emprunt(medias.item(res).get_identifiant,id_user_emprunt)
+								create emprunt.make_emprunt(medias.item(res).get_identifiant,id_user_emprunt,prm_duree_autorisee)
 								test := medias.item(res).emprunter
 								if test then
 									emprunts.add_last(emprunt)
@@ -345,7 +354,36 @@ feature
 					io.put_string("%N Identifiant inconnu%N")
 				end				
 			end
+			sauvegarde
 		end
+
+
+---------------------------------
+--- SAUVEGARDE DES INFORMATIONS
+---------------------------------
+	sauvegarde is
+	local
+		file : TEXT_FILE_WRITE
+		file_name_medias : STRING
+		file_name_utilisateurs : STRING
+		file_name_emprunts : STRING
+		i : INTEGER
+	do
+		file_name_medias := "medias.txt"
+		file_name_utilisateurs := "../ressources/utilisateursbis.txt"
+		create file.connect_to(file_name_utilisateurs)
+		if file.is_connected then
+			from i := 0
+			until i > utilisateurs.count - 1
+			loop
+				file.put_line(utilisateurs.item(i).sauvegarde)
+				i := i + 1
+			end
+			file.disconnect
+		else
+			io.put_string("Echec sauvegarde.%N")
+		end
+	end
 		
 ---------------------------------
 --- LECTURE FICHIER UTILISATEURS
@@ -712,6 +750,26 @@ feature
 		end
 		
 	end
+
+---------------------------------
+--- renvoie true si le compte correspondant a l'identifiant est actuf
+---------------------------------	
+	est_actif(identifiant : STRING) : BOOLEAN is
+	local
+		i : INTEGER
+		test : BOOLEAN
+	do
+		test := False
+		from i := 0
+		until i > utilisateurs.count-1 or test
+		loop
+			if utilisateurs.item(i).get_identifiant.is_equal(identifiant) and utilisateurs.item(i).est_actif then
+				test := True
+			end
+			i := i+1
+		end
+		Result := test
+	end
 	
 ---------------------------------
 --- IDENTIFIANT EXISTE
@@ -836,16 +894,18 @@ feature
 	consulter_retard is
 	local
 		i : INTEGER
-		date_retour : TIME
+		date_retour , aujourdhui: TIME
 	do
+		aujourdhui.update
 		if emprunts.count-1 > 0 then
 			from i:=0
 			until
 				i > emprunts.count-1
 			loop
 				date_retour := emprunts.item(i).get_date_retour
-				if emprunts.item(i).get_date_retour > date_retour.add_day(emprunts.item(i).get_dureeAutorisee) then
-					io.put_string( emprunts.item(i).afficher)
+				date_retour.add_day(emprunts.item(i).get_duree_autorisee)
+				if date_retour > aujourdhui then
+					io.put_string(emprunts.item(i).afficher)
 				end
 				i := i + 1
 			end
@@ -984,7 +1044,7 @@ feature
 ---------------------------------
 --- SUPPRIMER MEDIA
 ---------------------------------	
-	modifier_media : BOOLEAN is
+	supprimer_media : BOOLEAN is
 	local
 		bol : BOOLEAN
 		res : INTEGER
@@ -1062,10 +1122,10 @@ feature
 					if utilisateurs.item(i).get_identifiant.is_equal(identifiant) then
 						res := 0
 						if a_des_emprunts(identifiant) then
-							io.put_string("Suppression impossible l'utilisateur à des emprunts en cours.")
+							io.put_string("Suppression impossible l'utilisateur à des emprunts en cours.%N")
 						else
 							utilisateurs.item(i).desactive
-							io.put_string("Utilisateur supprimé")
+							io.put_string("Utilisateur supprimé. %N")
 							bol := True
 						end
 					end
@@ -1082,7 +1142,12 @@ feature
 		Result := bol		
 	end
 
-
+	modifier_duree_autorisee(duree : INTEGER) is
+	do
+		if duree > 0 then
+			prm_duree_autorisee := duree
+		end
+	end
 	
 ---------------------------------
 --- Fonctions utiles

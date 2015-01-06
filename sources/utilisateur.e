@@ -62,6 +62,20 @@ feature {ANY}
 		actif := True
 	end
 	
+	sauvegarde : STRING is
+	local
+		res : STRING
+	do
+		res := "Nom<"+nom+"> ; Prenom<"+prenom+"> ; Identifiant<"+identifiant+"> "
+		if admin = True
+			res := res + "; Admin<OUI> "
+		end
+		if actif then
+			res := res + "; Actif<OUI> "
+		end
+		Result := res
+	end
+	
 	
 	desactive is
 	do

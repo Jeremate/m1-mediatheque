@@ -7,21 +7,21 @@ feature {ANY}
 	id_media : STRING
 	identifiant : STRING
 	date_emprunt, date_retour : TIME
-	dureeAutorisee : INTEGER
+	duree_autorisee : INTEGER
 	
 feature {ANY}
 
-	make_emprunt(id_media_e : STRING; identifiant_e : STRING ) is
+	make_emprunt(id_media_e : STRING; identifiant_e : STRING ; duree_autorisee_e : INTEGER ) is
 	do
 		id_media := id_media_e
 		identifiant := identifiant_e
 		date_emprunt.update
-		dureeAutorisee := 15
+		duree_autorisee := duree_autorisee_e
 	end
 	
-	get_dureeAutorisee :  INTEGER is
+	get_duree_autorisee :  INTEGER is
 	do
-		Result := dureeAutorisee
+		Result := duree_autorisee
 	end
 	
 	get_identifiant : STRING is
