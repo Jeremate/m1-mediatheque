@@ -269,7 +269,7 @@ feature
 										res := 0
 										from
 										until 
-											res > 0
+											res >= 0
 										loop
 											titre := interface.choix_commande("%N Titre du media à rechercher : ")
 											res := rechercher_media_titre(titre,False)
