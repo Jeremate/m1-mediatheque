@@ -1015,7 +1015,7 @@ feature
 		loop
 			if medias.item(i).get_titre.as_lower.has_substring(titre.as_lower)  then
 				if flag then
-					if medias.item(i).get_nombre_exemplaire > 0 and medias.item(i).get_nombre > 0  then
+					if medias.item(i).get_nombre_exemplaire > 0  then
 						io.put_integer(j+1)
 						io.put_string(" : " + medias.item(i).afficher)
 						tab.add_last(i)
@@ -1111,7 +1111,7 @@ feature
 			loop
 				date_emprunt := emprunts.item(i).get_date_emprunt
 				date_emprunt.add_second(emprunts.item(i).get_duree_autorisee)
-				if date_emprunt < aujourdhui then
+				if date_emprunt < aujourdhui and emprunts.item(i).get_date_retour.hash_code = 0 then
 					io.put_string(emprunts.item(i).afficher)
 					io.put_new_line
 				end
@@ -1218,7 +1218,7 @@ feature
 				if not titre.is_equal("0") then
 					res := rechercher_media_titre(titre, True)
 				end
-				if res = -1 then
+				if res = -1 and not titre.is_equal("0") then
 					io.put_string("Aucun media correspondant. 0 pour annuler la recherche")
 				end
 				io.put_new_line
@@ -1367,7 +1367,7 @@ feature
 		until
 			res >= 0
 		loop	
-			duree := interface.choix_commande("%N Nouvelle durée d'emprunt autorisée pour les médias : ")
+			duree := interface.choix_commande("%N Nouvelle durée d'emprunt autorisée pour les médias (en jours) : ")
 			if duree.is_integer then
 				if duree.to_integer > 0 then
 					res := 0
