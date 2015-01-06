@@ -371,6 +371,7 @@ feature
 	do
 		file_name_medias := "../ressources/medias.txt"
 		file_name_utilisateurs := "../ressources/utilisateurs.txt"
+		file_name_medias:= "../ressources/medias.txt"
 		-- sauvegarde utilisateurs
 		create file.connect_to(file_name_utilisateurs)
 		if file.is_connected then

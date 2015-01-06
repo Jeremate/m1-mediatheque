@@ -1,7 +1,8 @@
 class LIVRE inherit MEDIA
 redefine 
 	afficher,
-	get_identifiant
+	get_identifiant,
+	sauvegarde
 end
 
 creation {ANY}

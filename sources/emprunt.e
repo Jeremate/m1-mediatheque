@@ -26,9 +26,8 @@ feature {ANY}
 	
 	sauvegarde : STRING is
 	do
-		Result := "id_media<"+id_media+"> ; identifiant<"+identifiant+" ; 
+		Result := "id_media<"+id_media+"> ; identifiant<"+identifiant+" ; "
 	end
-	
 	
 	get_identifiant : STRING is
 	do
