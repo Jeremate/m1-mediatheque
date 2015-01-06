@@ -305,7 +305,7 @@ feature
 								when "3" then
 									liste_emprunt
 								when "4" then
-									io.put_string("%N En cours de développement%N")
+									consulter_retard
 								else
 									io.put_string("Commande inconnue%N")
 								end
@@ -925,7 +925,7 @@ feature
 	local
 		i : INTEGER
 	do
-		if emprunts.count-1 > 0 then
+		if emprunts.count-1 >= 0 then
 			from i:=0
 			until
 				i > emprunts.count-1
@@ -947,18 +947,19 @@ feature
 	consulter_retard is
 	local
 		i : INTEGER
-		date_retour , aujourdhui: TIME
+		date_emprunt , aujourdhui: TIME
 	do
 		aujourdhui.update
-		if emprunts.count-1 > 0 then
+		if emprunts.count-1 >= 0 then
 			from i:=0
 			until
 				i > emprunts.count-1
 			loop
-				date_retour := emprunts.item(i).get_date_retour
-				date_retour.add_day(emprunts.item(i).get_duree_autorisee)
-				if date_retour > aujourdhui then
+				date_emprunt := emprunts.item(i).get_date_emprunt
+				date_emprunt.add_second(emprunts.item(i).get_duree_autorisee)
+				if date_emprunt < aujourdhui then
 					io.put_string(emprunts.item(i).afficher)
+					io.put_new_line
 				end
 				i := i + 1
 			end

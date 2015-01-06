@@ -88,7 +88,7 @@ feature {ANY}
 	
 	get_identifiant : STRING is
 	do
-		Result := titre + get_string_realisateur
+		Result := titre +" " + get_string_realisateur
 	end
 	
 	

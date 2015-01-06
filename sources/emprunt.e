@@ -41,12 +41,17 @@ feature {ANY}
 	
 	afficher : STRING is
 	do
-		Result := id_media + " " +identifiant
+		Result := id_media + " emprunté par " + identifiant
 	end
 	
 	get_date_retour : TIME is
 	do
 		Result := date_retour
+	end
+	
+	get_date_emprunt : TIME is
+	do
+		Result := date_emprunt
 	end
 	
 	set_date_retour is
