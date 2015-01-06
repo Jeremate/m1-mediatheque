@@ -17,6 +17,7 @@ feature {ANY}
 		titre := titre_l
 		auteur := auteur_l
 		nombre := nombre_l
+		nombre_exemplaire := nombre_l
 	end
 	
 	afficher : STRING is
@@ -26,7 +27,7 @@ feature {ANY}
 
 	sauvegarde  : STRING is
 	do
-		Result := Precursor + " ; Auteur<" + auteur + "> ; Livre "
+		Result := Precursor + "; Auteur<" + auteur + "> ; Livre "
 	end
 	
 	compare(livre : LIVRE) : BOOLEAN is

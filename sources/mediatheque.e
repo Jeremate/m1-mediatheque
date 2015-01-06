@@ -367,11 +367,11 @@ feature
 		file_name_medias : STRING
 		file_name_utilisateurs : STRING
 		file_name_emprunts : STRING
-		i : INTEGER
+		i,j,k : INTEGER
 	do
 		file_name_medias := "../ressources/medias.txt"
 		file_name_utilisateurs := "../ressources/utilisateurs.txt"
-		file_name_medias:= "../ressources/medias.txt"
+		file_name_emprunts:= "../ressources/emprunts.txt"
 		-- sauvegarde utilisateurs
 		create file.connect_to(file_name_utilisateurs)
 		if file.is_connected then
@@ -381,31 +381,32 @@ feature
 				file.put_line(utilisateurs.item(i).sauvegarde)
 				i := i + 1
 			end
-			file.disconnect
+			
 		else
 			io.put_string("Echec sauvegarde utilisateurs.%N")
 		end
+		file.disconnect
 		-- sauvegarde medias
 		create file.connect_to(file_name_medias)
 		if file.is_connected then
-			from i := 0
-			until i > medias.count - 1
+			from j := 0
+			until j > medias.count - 1
 			loop
-				file.put_line(medias.item(i).sauvegarde)
-				i := i + 1
+				file.put_line(medias.item(j).sauvegarde)
+				j := j + 1
 			end
-			file.disconnect
 		else
 			io.put_string("Echec sauvegarde medias.%N")
 		end
+		file.disconnect
 		-- sauvegarde emprunts
 		create file.connect_to(file_name_emprunts)
 		if file.is_connected then
-			from i := 0
-			until i > emprunts.count - 1
+			from k := 0
+			until k > emprunts.count - 1
 			loop
-				file.put_line(emprunts.item(i).sauvegarde)
-				i := i + 1
+				file.put_line(emprunts.item(k).sauvegarde)
+				k := k + 1
 			end
 			file.disconnect
 		else
@@ -580,6 +581,7 @@ feature
 				end
 			end
 			if ( var_dvd = 1) then
+				
 				var_dvd := 0
 				create dvd.make_dvd(titre,annee,liste_realisateur,liste_acteur,type,nombre)
 				ajouter_dvd(dvd, flag)

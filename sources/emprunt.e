@@ -25,8 +25,13 @@ feature {ANY}
 	end
 	
 	sauvegarde : STRING is
+	local
+		res : STRING
 	do
-		Result := "id_media<"+id_media+"> ; identifiant<"+identifiant+" ; "
+		res := "id_media<"+id_media+"> ; identifiant<"+identifiant+"> "
+		res := res + "; annee_e<" + date_emprunt.year.to_string+"> ; mois_e<"+date_emprunt.month.to_string+"> ; jour_e<"+date_emprunt.day.to_string+"> ; heure_e<"+date_emprunt.hour.to_string+"> ; minute_e<"+date_emprunt.minute.to_string+"> ; seconde_e<"+date_emprunt.second.to_string+"> "
+		res := res + "; annee_r<" + date_retour.year.to_string+"> ; mois_r<"+date_retour.month.to_string+"> ; jour_r<"+date_retour.day.to_string+"> ; heure_r<"+date_retour.hour.to_string+"> ; minute_r<"+date_retour.minute.to_string+"> ; seconde_r<"+date_retour.second.to_string+"> "
+		Result := res
 	end
 	
 	get_identifiant : STRING is

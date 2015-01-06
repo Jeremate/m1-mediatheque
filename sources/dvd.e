@@ -50,7 +50,7 @@ feature {ANY}
 		res : STRING
 		i : INTEGER
 	do
-		res := " ; Annee<" + annee.to_string +"> Type<" + type + "> ; DVD "
+		res := " ; Annee<" + annee.to_string +"> ; Type<" + type + "> ; DVD "
 		from i:=0
 		until i > liste_realisateur.count-1
 		loop
