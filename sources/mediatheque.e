@@ -105,8 +105,8 @@ feature
 									from
 									until fin or (not identifiant_existe(identifiant) and not est_vide(identifiant))
 									loop
-										if identifiant_existe(identifiant) and  not est_actif(identifiant) then
-											user_actif.active
+										if identifiant_existe(identifiant) and not est_actif(identifiant) then
+											activer_user(identifiant)
 											io.put_string("%NCompte réactivé.%N")
 											fin := True
 										else
@@ -149,8 +149,8 @@ feature
 												io.put_string("Commande inconnue%N")
 											end
 										end
+										ajouter_utilisateur(utilisateur,True)
 									end
-									ajouter_utilisateur(utilisateur,True)
 								when "4" then
 								-- Suppression utilisateur
 									test_suppression := supprimer_utilisateur
@@ -1505,6 +1505,21 @@ feature
 		end
 		
 	end	
+
+	activer_user(identifiant : STRING) is
+	local
+		i : INTEGER
+	do
+		from i := 0
+		until
+			i > utilisateurs.count-1
+		loop
+			if utilisateurs.item(i).get_identifiant.is_equal(identifiant) then
+				utilisateurs.item(i).active
+			end
+			i := i + 1 
+		end
+	end
 ---------------------------------
 --- Fonctions utiles
 ---------------------------------
