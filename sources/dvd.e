@@ -102,8 +102,12 @@ feature {ANY}
 		from i:=0
 		until i > liste_acteur.count-1
 		loop
-			res := res + " ; " + liste_acteur.item(i)
+			res := res + liste_acteur.item(i) 
+			
 			i := i + 1
+			if i <= liste_acteur.count-1 then
+				res := res + " - "
+			end
 		end
 		Result := res
 	end

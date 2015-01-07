@@ -1,4 +1,4 @@
-Titre<Vingt mille lieues sous les mers> ; Nombre<2> ; NbrExemplaire<2> ; Auteur<Jules Verne> ; Livre 
+Titre<Vingt mille lieues sous les mers> ; Nombre<0> ; NbrExemplaire<2> ; Auteur<Jules Verne> ; Livre 
 Titre<Cinq semaines en ballon> ; Nombre<1> ; NbrExemplaire<1> ; Auteur<Jules Verne> ; Livre 
 Titre<Voyage au centre de la terre> ; Nombre<1> ; NbrExemplaire<1> ; Auteur<Jules Verne> ; Livre 
 Titre<L'ile mysterieuse> ; Nombre<1> ; NbrExemplaire<1> ; Auteur<Jules Verne> ; Livre 
