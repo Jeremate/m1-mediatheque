@@ -236,7 +236,7 @@ feature
 												annee_dvd := interface.choix_commande("Nombre d'exemplaire du dvd : ")
 											end
 											annee := annee_dvd.to_integer
-											create dvd.make_dvd(titre,annee, liste_realisateur,liste_acteur,type,nombre_dvd)
+											create dvd.make_dvd(titre,annee, liste_realisateur,liste_acteur,type,nombre_dvd,nombre_dvd)
 											ajouter_dvd(dvd, True)
 										when "2" then
 											titre := interface.choix_commande("%N Titre du livre : ")
@@ -249,7 +249,7 @@ feature
 												nbr_str_livre := interface.choix_commande("%N Nombre d'exemplaire du livre : ")
 											end
 											nombre_livre := nbr_str_livre.to_integer
-											create livre.make_livre(titre,auteur,nombre_livre)
+											create livre.make_livre(titre,auteur,nombre_livre,nombre_livre)
 											ajouter_livre(livre,True)
 										else
 											io.put_string("Commande inconnue%N")
@@ -281,7 +281,7 @@ feature
 										end
 									else
 										io.put_string("Liste des médias vide.%N")
-									end
+									end							
 								else
 									io.put_string("Commande inconnue%N")
 								end
@@ -323,6 +323,8 @@ feature
 									consulter_retard
 								when "5" then
 									modifier_duree_autorisee
+								when "6" then
+									historique_emprunt(id_user_emprunt)
 								else
 									io.put_string("Commande inconnue%N")
 								end
@@ -379,6 +381,9 @@ feature
 							else
 								io.put_string("Liste des médias vide.%N")
 							end
+						when "4" then
+							historique_emprunt(id_user_emprunt)
+							interface.continuer
 						else
 							io.put_string("Commande inconnue%N")
 						end
@@ -460,80 +465,82 @@ feature
 			user: UTILISATEUR
 		do
 			create filereader.connect_to(filename_utilisateurs)		
-			from 
-			until filereader.end_of_input
-			loop
-				filereader.read_line
-				buffer := filereader.last_string
-				if not buffer.is_equal("") then
-					admin := False -- init par défaut
-					nom := ""
-					prenom := ""
-					identifiant := ""
-					nb_occurence := buffer.occurrences(';')
-					debut := 1
-					from i := 1
-					until i > nb_occurence+1
-					loop
-						i := i+1
-						fin := buffer.index_of(';',debut)
-						actif := True
-						if (fin = 0) then
-							fin := buffer.count
-						end
-						if (buffer.substring(debut,fin).has_substring("Nom")) then
-							valeur := buffer.substring(debut,fin)
-							nom := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
-							debut := fin + 1
-						end
-						if (buffer.substring(debut,fin).has_substring("Prenom")) then
-							valeur := buffer.substring(debut,fin)
-							prenom := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
-							debut := fin + 1
-						end
-						if (buffer.substring(debut,fin).has_substring("Identifiant")) then
-							valeur := buffer.substring(debut,fin)
-							identifiant := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
-							debut := fin + 1
-						end
-						if (buffer.substring(debut,fin).has_substring("Admin")) then
-							valeur := buffer.substring(debut,fin)
-							str_admin := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
-							if (str_admin.same_as("oui")) then
-								admin := True
-							else
-								admin := False
+			if filereader.is_connected then
+				from 
+				until filereader.end_of_input
+				loop
+					filereader.read_line
+					buffer := filereader.last_string
+					if not buffer.is_equal("") then
+						admin := False -- init par défaut
+						nom := ""
+						prenom := ""
+						identifiant := ""
+						nb_occurence := buffer.occurrences(';')
+						debut := 1
+						from i := 1
+						until i > nb_occurence+1
+						loop
+							i := i+1
+							fin := buffer.index_of(';',debut)
+							actif := True
+							if (fin = 0) then
+								fin := buffer.count
 							end
-							debut := fin + 1
-						end
-						if (buffer.substring(debut,fin).has_substring("Actif")) then
-							valeur := buffer.substring(debut,fin)
-							str_actif := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
-							if (str_actif.same_as("oui")) then
-								actif := True
-							else
-								actif := False
+							if (buffer.substring(debut,fin).has_substring("Nom")) then
+								valeur := buffer.substring(debut,fin)
+								nom := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
+								debut := fin + 1
 							end
-							debut := fin + 1
-						end	
-					end
-					if (admin) then
-						if actif then
-							create user.make_admin(nom, prenom, identifiant, True)
-						else
-							create user.make_admin(nom, prenom, identifiant, False)
+							if (buffer.substring(debut,fin).has_substring("Prenom")) then
+								valeur := buffer.substring(debut,fin)
+								prenom := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
+								debut := fin + 1
+							end
+							if (buffer.substring(debut,fin).has_substring("Identifiant")) then
+								valeur := buffer.substring(debut,fin)
+								identifiant := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
+								debut := fin + 1
+							end
+							if (buffer.substring(debut,fin).has_substring("Admin")) then
+								valeur := buffer.substring(debut,fin)
+								str_admin := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
+								if (str_admin.same_as("oui")) then
+									admin := True
+								else
+									admin := False
+								end
+								debut := fin + 1
+							end
+							if (buffer.substring(debut,fin).has_substring("Actif")) then
+								valeur := buffer.substring(debut,fin)
+								str_actif := valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)
+								if (str_actif.same_as("oui")) then
+									actif := True
+								else
+									actif := False
+								end
+								debut := fin + 1
+							end	
 						end
-					else
-						if actif then
-							create user.make_client(nom, prenom, identifiant, True)
+						if (admin) then
+							if actif then
+								create user.make_admin(nom, prenom, identifiant, True)
+							else
+								create user.make_admin(nom, prenom, identifiant, False)
+							end
 						else
-							create user.make_client(nom, prenom, identifiant, False)
+							if actif then
+								create user.make_client(nom, prenom, identifiant, True)
+							else
+								create user.make_client(nom, prenom, identifiant, False)
+							end
 						end
+						ajouter_utilisateur(user,flag)
 					end
-					ajouter_utilisateur(user,flag)
-				end
-			end	
-			filereader.disconnect
+				end	
+				filereader.disconnect
+			end
 		end
 		
 ---------------------------------
@@ -552,108 +559,111 @@ feature
 		test : BOOLEAN
 	do
 		create filereader.connect_to("../ressources/emprunts.txt")
-		from 
-		until filereader.end_of_input
-		loop
-			filereader.read_line		
-			buffer := filereader.last_string
-			nb_occurence := buffer.occurrences(';')
-			debut := 1
-			if not buffer.is_equal("") then
-				from i := 0
-				until i > nb_occurence
-				loop
-					i := i + 1
-					fin := buffer.index_of(';',debut)
-					if (fin = 0) then
-						fin := buffer.count
+		if filereader.is_connected then
+			from 
+			until filereader.end_of_input
+			loop
+				filereader.read_line		
+				buffer := filereader.last_string
+				nb_occurence := buffer.occurrences(';')
+				debut := 1
+				if not buffer.is_equal("") then
+					from i := 0
+					until i > nb_occurence
+					loop
+						i := i + 1
+						fin := buffer.index_of(';',debut)
+						if (fin = 0) then
+							fin := buffer.count
+						end
+						if (buffer.substring(debut,fin).has_substring("id_media")) then
+							valeur := buffer.substring(debut,fin)
+							id_media := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1))
+							debut := fin + 1				
+						end
+						if (buffer.substring(debut,fin).has_substring("identifiant")) then
+							valeur := buffer.substring(debut,fin)
+							identifiant := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1))
+							debut := fin + 1				
+						end
+						if (buffer.substring(debut,fin).has_substring("duree_autorisee")) then
+							valeur := buffer.substring(debut,fin)
+							duree_autorisee := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+							debut := fin + 1				
+						end
+						if (buffer.substring(debut,fin).has_substring("annee_r")) then
+							valeur := buffer.substring(debut,fin)
+							annee_r := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+							debut := fin + 1				
+						end
+						if (buffer.substring(debut,fin).has_substring("mois_r")) then
+							valeur := buffer.substring(debut,fin)
+							mois_r := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+							debut := fin + 1				
+						end
+						if (buffer.substring(debut,fin).has_substring("jour_r")) then
+							valeur := buffer.substring(debut,fin)
+							jour_r := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+							debut := fin + 1				
+						end
+						if (buffer.substring(debut,fin).has_substring("minute_r")) then
+							valeur := buffer.substring(debut,fin)
+							minute_r := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+							debut := fin + 1				
+						end
+						if (buffer.substring(debut,fin).has_substring("heure_r")) then
+							valeur := buffer.substring(debut,fin)
+							heure_r := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+							debut := fin + 1				
+						end
+						if (buffer.substring(debut,fin).has_substring("seconde_r")) then
+							valeur := buffer.substring(debut,fin)
+							seconde_r := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+							debut := fin + 1				
+						end
+						-- emprunt
+						if (buffer.substring(debut,fin).has_substring("annee_e")) then
+							valeur := buffer.substring(debut,fin)
+							annee_e := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+							debut := fin + 1				
+						end
+						if (buffer.substring(debut,fin).has_substring("mois_e")) then
+							valeur := buffer.substring(debut,fin)
+							mois_e := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+							debut := fin + 1				
+						end
+						if (buffer.substring(debut,fin).has_substring("jour_e")) then
+							valeur := buffer.substring(debut,fin)
+							jour_e := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+							debut := fin + 1				
+						end
+						if (buffer.substring(debut,fin).has_substring("minute_e")) then
+							valeur := buffer.substring(debut,fin)
+							minute_e := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+							debut := fin + 1				
+						end
+						if (buffer.substring(debut,fin).has_substring("heure_e")) then
+							valeur := buffer.substring(debut,fin)
+							heure_e := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+							debut := fin + 1				
+						end
+						if (buffer.substring(debut,fin).has_substring("seconde_e")) then
+							valeur := buffer.substring(debut,fin)
+							seconde_e := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+							debut := fin + 1				
+						end
 					end
-					if (buffer.substring(debut,fin).has_substring("id_media")) then
-						valeur := buffer.substring(debut,fin)
-						id_media := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1))
-						debut := fin + 1				
-					end
-					if (buffer.substring(debut,fin).has_substring("identifiant")) then
-						valeur := buffer.substring(debut,fin)
-						identifiant := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1))
-						debut := fin + 1				
-					end
-					if (buffer.substring(debut,fin).has_substring("duree_autorisee")) then
-						valeur := buffer.substring(debut,fin)
-						duree_autorisee := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
-						debut := fin + 1				
-					end
-					if (buffer.substring(debut,fin).has_substring("annee_r")) then
-						valeur := buffer.substring(debut,fin)
-						annee_r := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
-						debut := fin + 1				
-					end
-					if (buffer.substring(debut,fin).has_substring("mois_r")) then
-						valeur := buffer.substring(debut,fin)
-						mois_r := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
-						debut := fin + 1				
-					end
-					if (buffer.substring(debut,fin).has_substring("jour_r")) then
-						valeur := buffer.substring(debut,fin)
-						jour_r := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
-						debut := fin + 1				
-					end
-					if (buffer.substring(debut,fin).has_substring("minute_r")) then
-						valeur := buffer.substring(debut,fin)
-						minute_r := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
-						debut := fin + 1				
-					end
-					if (buffer.substring(debut,fin).has_substring("heure_r")) then
-						valeur := buffer.substring(debut,fin)
-						heure_r := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
-						debut := fin + 1				
-					end
-					if (buffer.substring(debut,fin).has_substring("seconde_r")) then
-						valeur := buffer.substring(debut,fin)
-						seconde_r := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
-						debut := fin + 1				
-					end
-					-- emprunt
-					if (buffer.substring(debut,fin).has_substring("annee_e")) then
-						valeur := buffer.substring(debut,fin)
-						annee_e := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
-						debut := fin + 1				
-					end
-					if (buffer.substring(debut,fin).has_substring("mois_e")) then
-						valeur := buffer.substring(debut,fin)
-						mois_e := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
-						debut := fin + 1				
-					end
-					if (buffer.substring(debut,fin).has_substring("jour_e")) then
-						valeur := buffer.substring(debut,fin)
-						jour_e := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
-						debut := fin + 1				
-					end
-					if (buffer.substring(debut,fin).has_substring("minute_e")) then
-						valeur := buffer.substring(debut,fin)
-						minute_e := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
-						debut := fin + 1				
-					end
-					if (buffer.substring(debut,fin).has_substring("heure_e")) then
-						valeur := buffer.substring(debut,fin)
-						heure_e := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
-						debut := fin + 1				
-					end
-					if (buffer.substring(debut,fin).has_substring("seconde_e")) then
-						valeur := buffer.substring(debut,fin)
-						seconde_e := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
-						debut := fin + 1				
-					end
+					test := date_emprunt.set(annee_e,mois_e,jour_e,heure_e,minute_e,seconde_e)
+					test := date_retour.set(annee_r,mois_r,jour_r,heure_r,minute_r,seconde_r)
+					create emprunt.make_emprunt(id_media,identifiant,duree_autorisee)
+					emprunt.set_date_emprunt(date_emprunt)
+					emprunt.set_dat_retour(date_retour)
+					emprunts.add_last(emprunt)
 				end
-				test := date_emprunt.set(annee_e,mois_e,jour_e,heure_e,minute_e,seconde_e)
-				test := date_retour.set(annee_r,mois_r,jour_r,heure_r,minute_r,seconde_r)
-				create emprunt.make_emprunt(id_media,identifiant,duree_autorisee)
-				emprunt.set_date_emprunt(date_emprunt)
-				emprunt.set_dat_retour(date_retour)
-				emprunts.add_last(emprunt)
 			end
+			filereader.disconnect
 		end
-		filereader.disconnect
+		
 	end
 	
 ---------------------------------
@@ -662,7 +672,7 @@ feature
 	lire_fichier_medias(flag : BOOLEAN) is
 	local
 		filereader: TEXT_FILE_READ
-		i,nombre, annee, var_dvd, var_livre : INTEGER
+		i,nombre, annee, var_dvd, var_livre,nombre_exemplaire : INTEGER
 		liste_realisateur : ARRAY[STRING]
 		liste_acteur : ARRAY[STRING]
 		buffer, valeur ,titre, type, auteur: STRING
@@ -681,6 +691,7 @@ feature
 			nb_occurence := buffer.occurrences(';')
 			debut := 1
 			nombre := 1
+			nombre_exemplaire := -1
 			from i := 0
 			until i > nb_occurence
 			loop
@@ -732,22 +743,32 @@ feature
 					nombre := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
 					debut := fin + 1				
 				end
+				if (buffer.substring(debut,fin).has_substring("NbrExemplaire")) then
+					valeur := buffer.substring(debut,fin)
+					nombre_exemplaire := (valeur.substring(valeur.first_index_of('<')+1, valeur.first_index_of('>')-1)).to_integer
+					debut := fin + 1				
+				end
 			end
-			if ( var_dvd = 1) then
-				
+			if nombre_exemplaire = -1 then
+				nombre_exemplaire := nombre
+			end
+			if ( var_dvd = 1) then				
 				var_dvd := 0
-				create dvd.make_dvd(titre,annee,liste_realisateur,liste_acteur,type,nombre)
+				create dvd.make_dvd(titre,annee,liste_realisateur,liste_acteur,type,nombre,nombre_exemplaire)
 				ajouter_dvd(dvd, flag)
 				titre := ""
 				annee :=0
 				type := ""
 				nombre := 1
+				nombre_exemplaire := -1
 			end
 			if ( var_livre = 1 ) then
 				var_livre := 0
-				create livre.make_livre(titre,auteur,nombre)
+				create livre.make_livre(titre,auteur,nombre,nombre_exemplaire)
 				ajouter_livre(livre,flag)
 				auteur := ""
+				nombre_exemplaire := -1
+				nombre := 1
 			end
 		end
 		filereader.disconnect
@@ -942,13 +963,14 @@ feature
 			from i := 0
 			until i > medias.count-1
 			loop
-				if medias.item(j).get_nombre_exemplaire > 0 then
+				if medias.item(i).get_nombre_exemplaire > 0 then
 					io.put_integer(j+1)
 					io.put_string(":"+medias.item(i).afficher)
 					j := j + 1
+					io.put_new_line
 				end
 				i := i+1
-				io.put_new_line
+				
 			end
 			io.put_new_line
 		else
@@ -1077,16 +1099,21 @@ feature
 	liste_emprunt is
 	local
 		i : INTEGER
+		test : BOOLEAN 
 	do
+		test := False
 		if emprunts.count-1 >= 0 then
 			from i:=0
 			until
 				i > emprunts.count-1
 			loop
-				if emprunts.item(i).get_date_retour.hash_code = 0 then
-					
+				if emprunts.item(i).get_date_retour.hash_code = 0 then				
 					io.put_string( emprunts.item(i).afficher)
 					io.put_new_line
+					test := True
+				end
+				if not test then
+					io.put_string("Liste des emprunts vide.%N")
 				end
 				i := i + 1
 			end
@@ -1102,7 +1129,9 @@ feature
 	local
 		i : INTEGER
 		date_emprunt , aujourdhui: TIME
+		test : BOOLEAN
 	do
+		test := False
 		aujourdhui.update
 		if emprunts.count-1 >= 0 then
 			from i:=0
@@ -1114,6 +1143,10 @@ feature
 				if date_emprunt < aujourdhui and emprunts.item(i).get_date_retour.hash_code = 0 then
 					io.put_string(emprunts.item(i).afficher)
 					io.put_new_line
+					test := True
+				end
+				if not test then
+					io.put_string("Liste des emprunts vide.%N")
 				end
 				i := i + 1
 			end
@@ -1408,6 +1441,33 @@ feature
 			end
 		end
 	end
+	
+	historique_emprunt(identifiant : STRING) is
+	local
+		i : INTEGER
+		test : BOOLEAN
+	do
+		test := False
+		if emprunts.count-1 >= 0 then
+			from i:=0
+			until
+				i > emprunts.count-1
+			loop
+				if emprunts.item(i).get_identifiant.is_equal(identifiant) then					
+					io.put_string( emprunts.item(i).affichage_historique)
+					io.put_new_line
+					test := True
+				end
+				if not test then
+					io.put_string("Vous n'avez jamais emprunté.%N")
+				end
+				i := i + 1
+			end
+		else
+			io.put_string("Liste des emprunts vide.%N")
+		end
+	end
+		
 ---------------------------------
 --- Fonctions utiles
 ---------------------------------

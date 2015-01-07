@@ -12,12 +12,12 @@ feature {ANY}
 	auteur: STRING
 	
 feature {ANY}
-	make_livre(titre_l : STRING; auteur_l: STRING ; nombre_l : INTEGER) is
+	make_livre(titre_l : STRING; auteur_l: STRING ; nombre_l , nombre_exemplaire_l: INTEGER) is
 	do
 		titre := titre_l
 		auteur := auteur_l
 		nombre := nombre_l
-		nombre_exemplaire := nombre_l
+		nombre_exemplaire := nombre_exemplaire_l
 	end
 	
 	afficher : STRING is

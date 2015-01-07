@@ -102,6 +102,7 @@ feature {ANY}
 		io.put_string("%N 3 - Consulter les emprunts en cours %N")
 		io.put_string("%N 4 - Consulter les retards %N")
 		io.put_string("%N 5 - Modifier la durée autorisée d'un emprunt %N")
+		io.put_string("%N 6 - Historique de vos emprunts %N")
 	end
 	
 	menu_gestion_emprunts_user is
@@ -110,6 +111,7 @@ feature {ANY}
 		io.put_string("%N 1 - Emprunter un media %N")
 		io.put_string("%N 2 - Rendre un media %N")
 		io.put_string("%N 3 - Rechercher un media (par titre) %N")
+		io.put_string("%N 4 - Historique de vos emprunts %N")
 	end
 	
 	menu_gestion_utilisateurs is

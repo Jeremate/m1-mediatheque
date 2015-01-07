@@ -24,6 +24,11 @@ feature {ANY}
 		Result := duree_autorisee
 	end
 	
+	affichage_historique : STRING is
+	do
+		Result := id_media + " emprunté le " + date_emprunt.day.to_string+"/"+date_emprunt.month.to_string+"/"+date_emprunt.year.to_string
+	end
+	
 	sauvegarde : STRING is
 	local
 		res : STRING

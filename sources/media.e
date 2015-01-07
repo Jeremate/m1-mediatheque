@@ -22,7 +22,7 @@ feature {ANY}
 	
 	sauvegarde : STRING is
 	do
-		Result := "Titre<"+titre +"> ; Nombre<"+nombre.to_string+"> "
+		Result := "Titre<"+titre +"> ; Nombre<"+nombre.to_string+"> ; NbrExemplaire<"+nombre_exemplaire.to_string+"> "
 	end
 	
 ---------------------
@@ -33,6 +33,7 @@ feature {ANY}
        nombre := nombre + valeur
 	   nombre_exemplaire := nombre_exemplaire + valeur
 	end
+	
 
 	supprimer is
 	do

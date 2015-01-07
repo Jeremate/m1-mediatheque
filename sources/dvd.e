@@ -15,7 +15,7 @@ feature {ANY}
 	type: STRING
 	
 feature {ANY}
-	make_dvd(titre_d: STRING; annee_d: INTEGER ;liste_realisateur_d: ARRAY[STRING] ;liste_acteur_d: ARRAY[STRING] ;type_d: STRING; nombre_d : INTEGER) is
+	make_dvd(titre_d: STRING; annee_d: INTEGER ;liste_realisateur_d: ARRAY[STRING] ;liste_acteur_d: ARRAY[STRING] ;type_d: STRING; nombre_d , nombre_exemplaire_d : INTEGER) is
 	local
 		i : INTEGER
 	do
@@ -23,7 +23,7 @@ feature {ANY}
 		create liste_acteur.with_capacity(0, 0)
 		titre := titre_d
 		nombre := nombre_d
-		nombre_exemplaire := nombre_d
+		nombre_exemplaire := nombre_exemplaire_d
 		annee := annee_d
 		from i:=0
 		until i > liste_realisateur_d.count-1
