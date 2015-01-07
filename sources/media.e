@@ -34,6 +34,11 @@ feature {ANY}
 	   nombre_exemplaire := nombre_exemplaire + valeur
 	end
 	
+	modifier_nombre(valeur : INTEGER) is
+	do
+		nombre_exemplaire := valeur
+	end
+	
 
 	supprimer is
 	do

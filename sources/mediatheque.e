@@ -131,21 +131,23 @@ feature
 										end
 										
 									end
-									new_admin := ""
-									from
-									until
-										new_admin.is_equal("1") or new_admin.is_equal("0")
-									loop
-										new_admin := interface.choix_commande("Grade(1 pour admin, 0 sinon) : ")
-										if est_vide(new_admin) then new_admin := "3" end
-										inspect 
-											new_admin
-										when "1" then
-											create utilisateur.make_admin(nom,prenom,identifiant,True)
-										when "0" then
-											create utilisateur.make_client(nom,prenom,identifiant,True)
-										else
-											io.put_string("Commande inconnue%N")
+									if not fin then
+										new_admin := ""
+										from
+										until
+											new_admin.is_equal("1") or new_admin.is_equal("0")
+										loop
+											new_admin := interface.choix_commande("Grade(1 pour admin, 0 sinon) : ")
+											if est_vide(new_admin) then new_admin := "3" end
+											inspect 
+												new_admin
+											when "1" then
+												create utilisateur.make_admin(nom,prenom,identifiant,True)
+											when "0" then
+												create utilisateur.make_client(nom,prenom,identifiant,True)
+											else
+												io.put_string("Commande inconnue%N")
+											end
 										end
 									end
 									ajouter_utilisateur(utilisateur,True)
@@ -281,7 +283,9 @@ feature
 										end
 									else
 										io.put_string("Liste des médias vide.%N")
-									end							
+									end
+								when "6" then
+									modifier_media							
 								else
 									io.put_string("Commande inconnue%N")
 								end
@@ -1431,7 +1435,7 @@ feature
 				if utilisateurs.item(i).get_identifiant.is_equal(identifiant) and  utilisateurs.item(i).est_actif then
 					res := 0
 					utilisateurs.item(i).modifier_statut
-					io.put_string("Statut modifier.%N")
+					io.put_string("Statut modifié.%N")
 				end
 				i := i + 1 
 			end
@@ -1467,7 +1471,38 @@ feature
 			io.put_string("Liste des emprunts vide.%N")
 		end
 	end
+	
+	
+	modifier_media is
+	local
+		res , num_media : INTEGER
+		valeur : STRING
+	do
+		num_media := rechercher_media
+		res := -1
+		from
+		until
+			res >= 0
+		loop
+			io.put_string("%NValeur actuelle du nombre d'exemplaires : ")
+			io.put_integer(	medias.item(num_media).get_nombre_exemplaire )
+			valeur := interface.choix_commande("%N Nouveau nombre d'exemplaires : ")
+			if valeur.is_integer then
+				if valeur.to_integer > 0 then
+					if valeur.to_integer >= medias.item(num_media).get_nombre_exemplaire - medias.item(num_media).get_nombre then
+						res := 0				
+						medias.item(num_media).set_nombre(valeur.to_integer-medias.item(num_media).get_nombre_exemplaire)
+						io.put_string("Modification enregirstrée%N")
+					else
+						io.put_string("Nouvelle valeur impossible. Des médias sont empruntés.%N")
+					end
+				else
+					io.put_string("Le nombre d'exemplaire doit être supérieur à 0.%N")
+				end
+			end
+		end
 		
+	end	
 ---------------------------------
 --- Fonctions utiles
 ---------------------------------
