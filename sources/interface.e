@@ -92,6 +92,7 @@ feature {ANY}
 		io.put_string("%N 3 - Ajouter un media %N")
 		io.put_string("%N 4 - Supprimer un media (par titre) %N")
 		io.put_string("%N 5 - Rechercher un media (par titre) %N")
+		io.put_string("%N 6 - Modifier le nombre d'exemplaires d'un média %N")
 	end
 	
 	menu_gestion_emprunts is
