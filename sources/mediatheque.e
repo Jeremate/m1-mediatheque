@@ -98,23 +98,7 @@ feature
 									afficher_utilisateurs
 								when "2" then
 									lire_fichier_utilisateurs(True)
-								when "3" then
-									-- contrôle de saisie du nom
-									nom := interface.choix_commande("%N  Nom de l'utilisateur : ")
-									from
-									until not est_vide(nom)
-									loop
-										nom := interface.choix_commande("%N  Nom de l'utilisateur : ")
-									end
-									
-									-- contrôle de saisie du prénom
-									prenom := interface.choix_commande("%N Prenom de l'utilisateur : ")
-									from
-									until not est_vide(prenom)
-									loop
-										prenom := interface.choix_commande("%N Prenom de l'utilisateur : ")
-									end
-									
+								when "3" then	
 									-- contrôle de saisie de l'identifiant
 									identifiant := interface.choix_commande("%N Identifiant de l'utilisateur : ")
 									fin := False
@@ -132,6 +116,22 @@ feature
 										
 									end
 									if not fin then
+										-- contrôle de saisie du nom
+										nom := interface.choix_commande("%N  Nom de l'utilisateur : ")
+										from
+										until not est_vide(nom)
+										loop
+											nom := interface.choix_commande("%N  Nom de l'utilisateur : ")
+										end
+										
+										-- contrôle de saisie du prénom
+										prenom := interface.choix_commande("%N Prenom de l'utilisateur : ")
+										from
+										until not est_vide(prenom)
+										loop
+											prenom := interface.choix_commande("%N Prenom de l'utilisateur : ")
+										end
+										
 										new_admin := ""
 										from
 										until
@@ -1251,12 +1251,12 @@ feature
 			until 
 				res >= 0 or titre.is_equal("0")
 			loop
-				titre := interface.choix_commande("%N Titre du media à rechercher : ")
+				titre := interface.choix_commande("%N Titre du media à rechercher (0 pour annuler la recherche): ")
 				if not titre.is_equal("0") then
 					res := rechercher_media_titre(titre, True)
 				end
 				if res = -1 and not titre.is_equal("0") then
-					io.put_string("Aucun media correspondant. 0 pour annuler la recherche")
+					io.put_string("Aucun media correspondant. (0 pour annuler la recherche)")
 				end
 				io.put_new_line
 			end
@@ -1455,17 +1455,17 @@ feature
 		if emprunts.count-1 >= 0 then
 			from i:=0
 			until
-				i > emprunts.count-1
+				i > emprunts.count-1 or not test
 			loop
 				if emprunts.item(i).get_identifiant.is_equal(identifiant) then					
 					io.put_string( emprunts.item(i).affichage_historique)
 					io.put_new_line
 					test := True
 				end
-				if not test then
-					io.put_string("Vous n'avez jamais emprunté.%N")
-				end
 				i := i + 1
+			end
+			if not test then
+				io.put_string("Vous n'avez jamais emprunté.%N")
 			end
 		else
 			io.put_string("Liste des emprunts vide.%N")
@@ -1479,25 +1479,27 @@ feature
 		valeur : STRING
 	do
 		num_media := rechercher_media
-		res := -1
-		from
-		until
-			res >= 0
-		loop
-			io.put_string("%NValeur actuelle du nombre d'exemplaires : ")
-			io.put_integer(	medias.item(num_media).get_nombre_exemplaire )
-			valeur := interface.choix_commande("%N Nouveau nombre d'exemplaires : ")
-			if valeur.is_integer then
-				if valeur.to_integer > 0 then
-					if valeur.to_integer >= medias.item(num_media).get_nombre_exemplaire - medias.item(num_media).get_nombre then
-						res := 0				
-						medias.item(num_media).set_nombre(valeur.to_integer-medias.item(num_media).get_nombre_exemplaire)
-						io.put_string("Modification enregirstrée%N")
+		if num_media > -1 then
+			res := -1
+			from
+			until
+				res >= 0
+			loop
+				io.put_string("%NValeur actuelle du nombre d'exemplaires : ")
+				io.put_integer(	medias.item(num_media).get_nombre_exemplaire )
+				valeur := interface.choix_commande("%N Nouveau nombre d'exemplaires : ")
+				if valeur.is_integer then
+					if valeur.to_integer > 0 then
+						if valeur.to_integer >= medias.item(num_media).get_nombre_exemplaire - medias.item(num_media).get_nombre then
+							res := 0				
+							medias.item(num_media).set_nombre(valeur.to_integer-medias.item(num_media).get_nombre_exemplaire)
+							io.put_string("Modification enregirstrée%N")
+						else
+							io.put_string("Nouvelle valeur impossible. Des médias sont empruntés.%N")
+						end
 					else
-						io.put_string("Nouvelle valeur impossible. Des médias sont empruntés.%N")
+						io.put_string("Le nombre d'exemplaire doit être supérieur à 0.%N")
 					end
-				else
-					io.put_string("Le nombre d'exemplaire doit être supérieur à 0.%N")
 				end
 			end
 		end
